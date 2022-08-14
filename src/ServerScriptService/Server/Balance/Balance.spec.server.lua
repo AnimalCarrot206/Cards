@@ -1,18 +1,16 @@
 --!strict
 local Balance = require(script.Parent)
 
-local createdBalance = Balance.new()
-assert(createdBalance:GetCapital() == 0)
+local createdBalance = Balance()
+assert(createdBalance:get() == 0)
 ----------------------------------------
-createdBalance:AddCapital(100)
-------------------------------------------
---assert(createdBalance:GetCapital() == 100)
---assert(createdBalance:IsCanAfford(50))
---assert(createdBalance:IsCanAfford(100))
-------------------------------------------
---assert(not createdBalance:IsCanAfford(1000))
-------------------------------------------
---createdBalance:Destroy()
---print(createdBalance)
-------------------------------------------
---createdBalance = nil
+createdBalance:add(100)
+----------------------------------------
+assert(createdBalance:get() == 100)
+createdBalance:add(-10)
+assert(createdBalance:get() == 90)
+----------------------------------------
+createdBalance:destroy()
+print(createdBalance)
+----------------------------------------
+createdBalance = nil

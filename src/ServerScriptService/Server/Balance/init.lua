@@ -1,25 +1,15 @@
 --!strict
+local Class = require(game.ReplicatedStorage.Shared.Class)
 local GoodSignal = require(game.ReplicatedStorage.Shared.GoodSignal)
--- Класс баланса для хранения значения |денег?|
-local Balance = {}
--- Типичное для луа игра с метатаблицами, просто, но со вкусом
-Balance.__index = Balance
 
--- Обычный конструктор с необязательным 
--- аргументом startCapital, 
--- сразу изменяющий значение _capital,
--- где _capital - "приватное поле",
--- это и есть значение баланса
-function Balance.new()
-	local balance = setmetatable({}, Balance)
+local Balance = Class:extend()
 
-	balance._capital = 0
-	balance.Changed = GoodSignal.new()
-	
-	return balance
+function Balance:new()
+	self._capital = 0
+	self.Changed = GoodSignal.new()
 end
--- Обычный метод уничтожения/осовобождения памяти
-function Balance:Destroy()
+
+function Balance:destroy()
 	self.Changed:Destroy()
 	self.Changed = nil
 	-- Просто удаляем все из таблички,
@@ -28,19 +18,14 @@ function Balance:Destroy()
 	table.clear(self)
 	self = nil
 end
--- Это геттер для _capital поля
+
 function Balance:get(): number
 	return self._capital :: number
 end
--- Метод для проверки способности покупки
---function Balance:IsCanAfford(value: number): boolean
---	return self._capital >= value
---end
--- Это сеттер для _capital поля
--- Причем необычный сеттер, функция принимает также
--- отрицательные числа, как бы убавляя баланс,
--- + Простая, шустрая реализация
--- - Немножко странно, не интуитивно понятно
+
+--Складывает _capital с numberToAdd
+-- увеличивая _capital, если numberToAdd > 0,
+-- уменьшая _capital если numberToAdd < 0
 function Balance:add(numberToAdd: number)
 	self._capital += numberToAdd
 	self.Changed:Fire(self._capital)
