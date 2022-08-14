@@ -6,6 +6,8 @@ local Class = require(game.ReplicatedStorage.Shared.Class)
 local Team = Class:extend()
 
 function Team:new(name: string, maxPlayers: number)
+	assert(name)
+	assert(maxPlayers)
 	self.MAXIMUM_PLAYERS_IN_TEAM = maxPlayers
 
 	local team = Instance.new("Team")
