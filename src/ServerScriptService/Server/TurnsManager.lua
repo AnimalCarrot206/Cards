@@ -59,7 +59,4 @@ function TurnsManager:nextTurn()
     turns:pushleft(nextPlayer)
 end
 
-
-
-
 return TurnsManager
