@@ -2,13 +2,14 @@
 local DataStoreService = game:GetService("DataStoreService")
 local MoneyDataStore = DataStoreService:GetDataStore("PlayerStats", "MoneyValue")
 
+local Class = require(game.ReplicatedStorage.Shared.Class)
 local Balance = require(script.Parent.Balance)
 
 local npcBuyed = game.ServerStorage.BindableEvents.NpcBuyedItem
 
 -- Можно сказать обертка баланса, но более прокаченная
 -- Напоминает паттерн фабрика
-local CashAccouting = {}
+local CashAccouting = Class:extend()
 
 local playersBalances = {}
 -- Создаем баланс, возвращаем его и запихиваем в список 
