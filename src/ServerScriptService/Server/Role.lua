@@ -1,14 +1,14 @@
 --!strict
 local Class = require(game.ReplicatedStorage.Shared.Class)
 --[[
- 	TEAM CLASS BEGIN
+ 	ROLE CLASS BEGIN
 ]]
-local Team = Class:extend()
+local Role = Class:extend()
 
-function Team:new(name: string, maxPlayers: number)
+function Role:new(name: string, maxPlayers: number)
 	assert(name)
 	assert(maxPlayers)
-	self.MAXIMUM_PLAYERS_IN_TEAM = maxPlayers
+	self.MAXIMUM_PLAYERS_ROLE = maxPlayers
 
 	local team = Instance.new("Team")
 	team.Name = name
@@ -19,14 +19,14 @@ function Team:new(name: string, maxPlayers: number)
 	self._team = team
 end
 
-function Team:destroy()
+function Role:destroy()
 	self._team:Destroy()
 	table.clear(self)
 	self = nil
 end
 
-function Team:assign(player: Player)
-	local maxPlayers = self.MAXIMUM_PLAYERS_IN_TEAM :: number
+function Role:assign(player: Player)
+	local maxPlayers = self.MAXIMUM_PLAYERS_ROLE :: number
 	
 	if #self._team:GetPlayers() == maxPlayers then
 		return
@@ -35,30 +35,33 @@ function Team:assign(player: Player)
 	player.Team = self._team
 end
 
-function Team:unassign(player: Player)
+function Role:unassign(player: Player)
 	if player.Team == self._team then
 		player.Team = nil
 	end
 end
 
-
 --function Team:isWon()
 --	error("Not implemented method!")
 --end
 
-function Team:isPlayerInTeam(player: Player)
+function Role:isPlayerRole(player: Player): boolean
 	return player.Team == self._team
 end
 
-function Team:getName()
-	return self._team.Name
+function Role:getName(): string
+	return self._team.Name :: string
 end
 
-function Team:getPlayerCount()
+function Role:getPlayers(): Array<Player>
+	return self._team:GetPlayers()
+end
+
+function Role:getPlayerCount(): number
 	return #self._team:GetPlayers()
 end
 --[[
- 	TEAM CLASS END
+ 	ROLE CLASS END
 ]]
 
-return Team
+return Role
