@@ -1,9 +1,9 @@
+--!strict
+local Players = game:GetService("Players")
 
 local Class = require(game.ReplicatedStorage.Shared.Class)
 local GoodSignal = require(game.ReplicatedStorage.Shared.GoodSignal)
 local List = require(game.ReplicatedStorage.Shared.List)
-
-local Players = game:GetService("Players")
 
 local TurnsManager = Class:extend()
 
@@ -34,7 +34,6 @@ local _next do
         end
     end)    
 end
-
 
 function TurnsManager:preloadTurns()
     local allPlayers = Players:GetPlayers()
