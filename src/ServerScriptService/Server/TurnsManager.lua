@@ -5,6 +5,11 @@ local Class = require(game.ReplicatedStorage.Shared.Class)
 local GoodSignal = require(game.ReplicatedStorage.Shared.GoodSignal)
 local List = require(game.ReplicatedStorage.Shared.List)
 
+local turnStartedRE = game.ReplicatedStorage.RemoteEvents.Round.TurnStarted :: RemoteEvent
+local turnEndedRE = game.ReplicatedStorage.RemoteEvents.Round.TurnEnded :: RemoteEvent
+local attackRE = game.ReplicatedStorage.RemoteEvents.Round.Attack :: RemoteEvent
+local defenceRE = game.ReplicatedStorage.RemoteEvents.Round.Defense :: RemoteEvent
+
 local TurnsManager = Class:extend()
 
 TurnsManager.TurnStarted = GoodSignal.new()
@@ -35,6 +40,18 @@ local _next do
     end)    
 end
 
+local _turnHandler do
+
+    _turnHandler = function(turnOwner: Player)
+        local player: Player, cardName: string = attackRE.OnServerEvent:Wait()
+        assert(cardName)
+        assert(type(cardName) == "string")
+        assert(player == turnOwner)
+
+        local enemy: Player, cardName: string = defenceRE.OnServerEvent:Wait()
+    end
+end
+
 function TurnsManager:preloadTurns()
     local allPlayers = Players:GetPlayers()
 
@@ -52,10 +69,14 @@ end
 function TurnsManager:nextTurn()
     local previousPlayer = turns:popright()
     self.TurnEnded:Fire(previousPlayer)
+    turnEndedRE:FireAllClients(previousPlayer)
 
     local nextPlayer = _next()
     self.TurnStarted:Fire(nextPlayer)
+    turnStartedRE:FireAllClients(nextPlayer)
+
     turns:pushleft(nextPlayer)
+    _turnHandler(nextPlayer)
 end
 
 return TurnsManager
