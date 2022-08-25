@@ -21,7 +21,7 @@ function Armory:prepareGuns()
     local allPlayers = Players:GetPlayers()
 
     for _, player in ipairs(allPlayers) do
-        local newGun = Guns.rustyRevolver:new(player)
+        local newGun = Guns.rustyRevolver(player)
         table.insert(createdGuns, newGun)
 
         _setPlayerAttributes(player, newGun)
@@ -56,7 +56,7 @@ function Armory:giveGun(player: Player, gunName: string)
         end
     end
 
-    local newGun = foundGun:new(player)
+    local newGun = foundGun(player)
     table.insert(createdGuns, newGun)
     _setPlayerAttributes(player, newGun)
 end

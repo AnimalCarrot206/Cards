@@ -1,22 +1,20 @@
 --!strict
 
 local Class = require(game.ReplicatedStorage.Shared.Class)
+local CustonEnum = require(game.ReplicatedStorage.Shared.CustomEnum)
 local ModuleContainer = require(game.ReplicatedStorage.Shared.ModuleContainer)
 
 local Armory = require(game.ServerScriptService.Server.Armory)
 
-local CARD_TYPES = {
-    SHOOT = "shoot",
-    MISS = "MISS",
-    BONUS = "bonus",
-    WEAPON = "weapon"
-}
+local cardsEnum = CustonEnum.new("Cards", {})
+local cardTypeEnum = CustonEnum.new("CardType", {})
+
 
 local Card = Class:extend()
 
 Card.Container = game.ReplicatedStorage.Models.Cards
 
-function Card:new(cardName, type: string)
+function Card:new(cardName, type)
     self.Name = cardName
     self.Type = type
 end
@@ -41,7 +39,7 @@ end
 local Crack = Card:extend()
 
 function Crack:new()
-    self.super:new("Crack", CARD_TYPES.SHOOT)
+    self.super:new("Crack")
 end
 
 function Crack:use(player: Player, enemy: Player?)
