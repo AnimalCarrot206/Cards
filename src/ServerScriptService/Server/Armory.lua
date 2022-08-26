@@ -3,6 +3,7 @@ local Players = game:GetService("Players")
 
 local Class = require(game.ReplicatedStorage.Shared.Class)
 local ModuleContainer = require(game.ReplicatedStorage.Shared.ModuleContainer)
+local PlayerStats = require(game.ReplicatedStorage.Shared.PlayerStats)
 
 local RolesManager = require(game.ServerScriptService.Server.RolesManager)
 local Guns = require(game.ServerScriptService.Server.Guns)
@@ -12,9 +13,7 @@ local Armory = Class:extend()
 local createdGuns = {}
 
 local function _setPlayerAttributes(player: Player, gun)
-    local deffaultPlayerRange = player:GetAttribute("DeffaultRange")
-    player:SetAttribute("Range", gun:getRange() + deffaultPlayerRange)
-    player:SetAttribute("Gun", gun:getName())
+    PlayerStats:setRange(player, gun:getRange())
 end
 
 function Armory:prepareGuns()
