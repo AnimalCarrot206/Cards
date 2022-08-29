@@ -2,8 +2,8 @@
 local Players = game.Players
 
 local Class = require(game.ReplicatedStorage.Shared.Class)
-local ModuleContainer = require(game.ReplicatedStorage.Shared.ModuleContainer)
-local Role = ModuleContainer:getModule("Role")
+
+local Role = require(game.ServerScriptService.Server.Role)
 
 local RolesManager = Class:extend()
 

@@ -1,8 +1,6 @@
 --!strict
 local Class = require(game.ReplicatedStorage.Shared.Class)
---[[
- 	ROLE CLASS BEGIN
-]]
+
 local Role = Class:extend()
 
 function Role:new(name: string, maxPlayers: number)
