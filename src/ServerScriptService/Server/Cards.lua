@@ -1,15 +1,18 @@
 --!strict
+local HttpService = game:GetService("HttpService")
+local Players = game:GetService("Players")
 
 local Class = require(game.ReplicatedStorage.Shared.Class)
 local CustomEnum = require(game.ReplicatedStorage.Shared.CustomEnum)
-local ModuleContainer = require(game.ReplicatedStorage.Shared.ModuleContainer)
 local Animations = require(game.ReplicatedStorage.Shared.Animations)
 local PlayerStats = require(game.ReplicatedStorage.Shared.PlayerStats)
 
 local Armory = require(game.ServerScriptService.Server.Armory)
+local CardDecksManager = require(game.ServerScriptService.Server.CardDecksManager)
+local TurnsManager = require(game.ServerScriptService.Server.TurnsManager)
 
 local cardsEnum = CustomEnum.new("Cards", {
-    ["Crack!"] = 0,
+    ["Bang!!"] = 0,
     ["Miss"] = 1,
     ["Ambush!"] = 2,
     ["Lemonade"] = 3,
@@ -47,11 +50,8 @@ local function _getPlayerGun(player: Player)
     return Armory:getPlayerGun(player)
 end
 
-function Card:new(cardName, cardSuit, useType, overlap: any?)
-    self._name = cardName
-    self._suit = cardSuit
-    self._useType = useType
-    self._overlap = overlap
+function Card:new()
+    self._id = HttpService:GenerateGUID(false)
 end
 
 function Card:destroy()
@@ -75,6 +75,10 @@ function Card:getOvelrap(): any?
     return self._overlap
 end
 
+function Card:getId()
+    return self._id
+end
+
 function Card:use()
     error("Not implemented method!")
 end
@@ -82,18 +86,13 @@ end
 --[[
     _____________________________________
 ]]
-local Crack = Card:extend()
+local Bang = Card:extend()
+Bang._name = CustomEnum.Cards["Bang!!"].Name
+Bang._suit = CustomEnum.CardSuit.Common
+Bang._useType = CustomEnum.CardUseType.TwoPlayerUse
+Bang._overlap = CustomEnum.Cards["Miss"]
 
-function Crack:new()
-    local name = CustomEnum.Cards["Crack!"].Name
-    local suit = CustomEnum.CardSuit.Common
-    local useType = CustomEnum.CardUseType.TwoPlayerUse
-    local overlap = CustomEnum.Cards["Miss"]
-
-    self.super:new(name, suit, useType, overlap)
-end
-
-function Crack:use(player: Player, enemy: Player)
+function Bang:use(player: Player, enemy: Player)
     local gun = _getPlayerGun(player)
     gun:shoot(enemy, CustomEnum.ShootType.Hit)
 end
@@ -101,15 +100,10 @@ end
     _____________________________________
 ]]
 local Miss = Card:extend()
-
-function Miss:new()
-    local name = CustomEnum.Cards["Miss"].Name
-    local suit = CustomEnum.CardSuit.Common
-    local useType = CustomEnum.CardUseType.TwoPlayerUse
-    local overlap = nil
-
-    self.super:new(name, suit, useType, overlap)
-end
+Miss._name = CustomEnum.Cards["Miss"].Name
+Miss._suit = CustomEnum.CardSuit.Common
+Miss._useType = CustomEnum.CardUseType.TwoPlayerUse
+Miss._overlap = nil
 
 function Miss:use(player: Player, enemy: Player)
     local gun = _getPlayerGun(player)
@@ -119,15 +113,10 @@ end
     _____________________________________
 ]]
 local Ambush = Card:extend()
-
-function Ambush:new()
-    local name = CustomEnum.Cards["Ambush!"].Name
-    local suit = CustomEnum.CardSuit.Common
-    local useType = CustomEnum.CardUseType.TwoPlayerUse
-    local overlap = CustomEnum.Cards["Miss"].Name
-
-    self.super:new(name, suit, useType, overlap)
-end
+Ambush._name = CustomEnum.Cards["Ambush!"].Name
+Ambush._suit = CustomEnum.CardSuit.Common
+Ambush._useType = CustomEnum.CardUseType.TwoPlayerUse
+Ambush._overlap = CustomEnum.Cards["Miss"].Name
 
 function Ambush:use(player: Player, enemy: Player)
     local gun = _getPlayerGun(player)
@@ -137,15 +126,10 @@ end
     _____________________________________
 ]]
 local Lemonade = Card:extend()
-
-function Lemonade:new()
-    local name = CustomEnum.Cards["Lemonade"].Name
-    local suit = CustomEnum.CardSuit.Common
-    local useType = CustomEnum.CardUseType.OnePlayerUse
-    local overlap = nil
-
-    self.super:new(name, suit, useType, overlap)
-end
+Lemonade._name = CustomEnum.Cards["Lemonade"].Name
+Lemonade._suit = CustomEnum.CardSuit.Common
+Lemonade._useType = CustomEnum.CardUseType.OnePlayerUse
+Lemonade._overlap = nil
 
 function Lemonade:use(player: Player)
     local lemonadeAnimation = Animations.PLAYER_USE_LEMONADE
@@ -161,6 +145,29 @@ end
     _____________________________________
 ]]
 local DrinksOnMe =  Card:extend()
+DrinksOnMe._name = CustomEnum.Cards["Drinks on me"].Name
+DrinksOnMe._suit = CustomEnum.CardSuit.Common
+DrinksOnMe._useType = CustomEnum.CardUseType.OnePlayerUse
+DrinksOnMe._overlap = nil
+
+function DrinksOnMe:use(player: Player)
+    local allPlayers = Players:GetPlayers()
+
+    for index, player in ipairs(allPlayers) do
+        local commonDeck = CardDecksManager:getPlayerCommonDeck(player)
+        local bonusDeck = CardDecksManager:getPlayerBonusDeck(player)
+
+        if not commonDeck or not bonusDeck then continue end
+
+        local cardName = CustomEnum.Cards["Lemonade"].Name
+
+        if commonDeck:getDeckFreeSpace() > 0 then
+            commonDeck:addCard(cardName)
+        else
+            bonusDeck:addCard(cardName)
+        end
+    end
+end
 --[[
     _____________________________________
 ]]
@@ -177,6 +184,21 @@ local Blackmail = Card:extend()
     _____________________________________
 ]]
 local Thief = Card:extend()
+Thief._name = CustomEnum.Cards["Thief"].Name
+Thief._suit = CustomEnum.CardSuit.Common
+Thief._useType = CustomEnum.CardUseType.TwoPlayerUse
+Thief._overlap = nil
+
+function Thief:use(player: Player, enemy: Player)
+    local playerCommonDeck = CardDecksManager:getPlayerCommonDeck(player)
+
+    local enemyCommonDeck = CardDecksManager:getPlayerCommonDeck(enemy)
+    local enemyBonusDeck = CardDecksManager:getPlayerBonusDeck(enemy)
+
+    local randomChoosenCard
+
+    
+end
 --[[
     _____________________________________
 ]]
@@ -248,3 +270,24 @@ end
 --[[
     _____________________________________
 ]]
+return {
+    ["Bang!!"] = Bang,
+    ["Miss"] = Miss,
+    ["Ambush!"] = Ambush,
+    ["Lemonade"] = Lemonade,
+    ["Drinks on me"] = DrinksOnMe,
+    ["Present"] = Present,
+    ["Cage"] = Cage,
+    ["Blackmail"] = Blackmail,
+    ["Thief"] = Thief,
+    ["Reverse"] = Reverse,
+    ["Exchange"] = Exchange,
+    ["Duel"] = Duel,
+    ["Move"] = Move,
+    ["Mayor's pardon"] = MayorsPardon,
+
+    ["Shawed off"] = ShawedOff,
+    ["Judi"] = Judi,
+    ["Navy revolver"] = NavyRevolver,
+    ["Winchester"] = Winchester,
+}
