@@ -11,7 +11,7 @@ local shootTypeEnum = CustomEnum.new("ShootType", {
 
 local Gun = Class:extend()
 
-Gun.Container = game.ReplicatedStorage.Models.Guns :: Folder
+--Gun.Container = game.ReplicatedStorage.Models.Guns :: Folder
 
 local function _ambush(player: Player)
     
