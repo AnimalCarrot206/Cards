@@ -9,7 +9,8 @@ local PlayerStats = require(game.ReplicatedStorage.Shared.PlayerStats)
 
 local Armory = require(game.ServerScriptService.Server.Armory)
 local CardDecksManager = require(game.ServerScriptService.Server.CardDecksManager)
-local TurnsManager = require(game.ServerScriptService.Server.TurnsManager)
+local AbilityManager = require(game)
+--local TurnsManager = require(game.ServerScriptService.Server.TurnsManager)
 
 local cardsEnum = CustomEnum.new("Cards", {
     ["Bang!!"] = 0,
@@ -30,7 +31,11 @@ local cardsEnum = CustomEnum.new("Cards", {
     ["Shawed off"] = 14,
     ["Judi"] = 15,
     ["Navy revolver"] = 16,
-    ["Winchester"] = 17
+    ["Winchester"] = 17,
+
+    ["Scope"] = 18,
+    ["Brand stool"] = 19,
+    ["Apple juice"] = 20,
 })
 
 local cardTypeEnum = CustomEnum.new("CardUseType", {
@@ -90,7 +95,7 @@ local Bang = Card:extend()
 Bang._name = CustomEnum.Cards["Bang!!"].Name
 Bang._suit = CustomEnum.CardSuit.Common
 Bang._useType = CustomEnum.CardUseType.TwoPlayerUse
-Bang._overlap = CustomEnum.Cards["Miss"]
+Bang._overlap = CustomEnum.Cards["Miss"].Name
 
 function Bang:use(player: Player, enemy: Player)
     local gun = _getPlayerGun(player)

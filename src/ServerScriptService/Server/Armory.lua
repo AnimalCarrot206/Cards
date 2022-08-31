@@ -40,23 +40,21 @@ local _calculateRange do
         end
 
 		local current = sits[playerASitPlace]
-
 		local i = 0
 		
-		local isDeadendReached = false
+		local isLeftSideCycle = true
+        if playerBSitPlace % 2 ~= 0 then
+            isLeftSideCycle = false
+        end
+
         while true do
-            if isDeadendReached == true then
-                current = sits[current.previous]
-            elseif isDeadendReached == false then
+            if isLeftSideCycle == true then
                 current = sits[current.next]
+            elseif isLeftSideCycle == false then
+                current = sits[current.previous]
             end
             
-			i += 1
-            if playerASitPlace + current.value == 9 then
-				i = 0
-				isDeadendReached = true
-                current = sits[playerASitPlace]		
-			end
+			i = i + 1
 			
 			if current.value == playerBSitPlace then
 				return i
@@ -64,7 +62,9 @@ local _calculateRange do
         end
     end
 end
-
+--[=[
+    Gives to all players Rusty Revolver, must be called on game start
+]=]
 function Armory:prepareGuns()
     local allPlayers = Players:GetPlayers()
 
@@ -75,24 +75,26 @@ function Armory:prepareGuns()
         _setPlayerAttributes(player, newGun)
     end
 end
-
+--[=[
+    Takes away all players guns, must be called on game end
+]=]
 function Armory:disableGuns()
     for _, gun in ipairs(createdGuns) do
         gun:destroy()
     end
 end
-
+--[=[
+    Calculates range between two players, by their sit places
+]=]
 function Armory:calculateRange(playerA: Player, playerB: Player)
     local playerASitPlace = PlayerStats:getPlayerSitPlace(playerA)
     local playerBSitPlace = PlayerStats:getPlayerSitPlace(playerB)
     
-    
+    return _calculateRange(playerASitPlace, playerBSitPlace)
 end
-
-function Armory:test(num1, num2)
-    return _calculateRange(num1, num2)
-end
-
+--[=[
+    Gives player gun, if it found, then destroys previous gun, and changes characteristics
+]=]
 function Armory:giveGun(player: Player, gunName: string)
     local foundGun = Guns[gunName]
 
@@ -107,7 +109,9 @@ function Armory:giveGun(player: Player, gunName: string)
     table.insert(createdGuns, newGun)
     _setPlayerAttributes(player, newGun)
 end
-
+--[=[
+    Finds and returns player gun
+]=]
 function Armory:getPlayerGun(player: Player)
     for _, gun in ipairs(createdGuns) do
         if gun:getOwner() == player then

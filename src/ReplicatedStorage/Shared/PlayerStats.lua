@@ -10,9 +10,10 @@ PlayerStats.DeffaultRangeChanged = GoodSignal.new()
 
 local HEALTH_ATTRIBUTE_NAME = "Health"
 local RANGE_ATTRIBUTE_NAME = "Range"
-local DEFFAULT_RANGE_ATTRIBUTE_NAME = "Deffault range"
-local DECK_CAPACITY_ATTRIBUTE_NAME = "Deck capacity"
-local SIT_PLACE_ATTRIBUTE_NAME = "Sit place"
+local DEFFAULT_RANGE_ATTRIBUTE_NAME = "DeffaultRange"
+local DECK_CAPACITY_ATTRIBUTE_NAME = "DeckCapacity"
+local SIT_PLACE_ATTRIBUTE_NAME = "SitPlace"
+local ADDITIONAL_REMOTENESS_ATTRIBUTE_NAME = "AdditionalRemoteness"
 --[=[
     Returns Player's health
 ]=]
@@ -77,6 +78,14 @@ end
 
 function PlayerStats:setPlayerSitPlace(player: Player, number: number)
     player:SetAttribute(SIT_PLACE_ATTRIBUTE_NAME, number)
+end
+
+function PlayerStats:getAdditionalRemoteness(player: Player)
+    return player:GetAttribute(ADDITIONAL_REMOTENESS_ATTRIBUTE_NAME)
+end
+
+function PlayerStats:setAdditionalRemoteness(player: Player, number: number)
+    player:SetAttribute(ADDITIONAL_REMOTENESS_ATTRIBUTE_NAME, number)
 end
 
 return PlayerStats

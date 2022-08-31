@@ -38,4 +38,8 @@ function TurnsManager:nextTurn()
 
 end
 
+function TurnsManager:getTurnOwner(): Player
+    
+end
+
 return TurnsManager

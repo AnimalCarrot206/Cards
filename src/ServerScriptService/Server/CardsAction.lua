@@ -16,6 +16,7 @@ CardsAction.Action = GoodSignal.new()
 function CardsAction:createAction(card)
     local cardAction = CardAction(card)
     self.Action:Fire(cardAction)
+    return cardAction
 end
 --[=[
     Encapsulates CardAction removing 
