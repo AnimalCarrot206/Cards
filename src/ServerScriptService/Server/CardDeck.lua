@@ -1,13 +1,13 @@
 --!strict
 
 local Class = require(game.ReplicatedStorage.Shared.Class)
+local Remotes = require(game.ReplicatedStorage.Shared.Remotes)
 
 local Cards = require(game.ServerScriptService.Server.Cards)
 
 local CardDeck = Class:extend()
 
 local DEFAULT_DECK_CAPACITY = 6
-
 --[=[
     Finds a card returned by Cards module
 ]=]
@@ -21,6 +21,14 @@ local function _findCard(cardName: string)
     else 
         error(string.format("Card %s doesn't exist", cardName))
     end
+end
+
+local function _notifyClientThatCardRemoved(player: Player, cardId: string)
+    Remotes.CardRemoved:FireClient(player, cardId)
+end
+
+local function _notifyClientThatCardAdded(player: Player, cardId: string)
+    Remotes.CardAdded:FireClient(player, cardId)
 end
 
 function CardDeck:new(owner: Player, deckCapacity: number?)
@@ -47,6 +55,7 @@ function CardDeck:addCard(cardName: string)
     
     if self:getDeckFreeSpace() > 0 then
         table.insert(self._cards, createdCard)
+        _notifyClientThatCardAdded(self._owner, createdCard:getId())
     end
 end
 --[=[
@@ -57,6 +66,7 @@ function CardDeck:removeCard(cardId: string)
         if card:getId() == cardId then
             table.remove(self._cards, i)
             card:destroy()
+            _notifyClientThatCardRemoved(self._owner, cardId)
             return
         end
     end
@@ -69,6 +79,7 @@ function CardDeck:addExtraCard(cardName: string)
     local createdCard = foundCard()
 
     table.insert(self._cards, createdCard)
+    _notifyClientThatCardAdded(self._owner, createdCard:getId())
 end
 --[=[
     Returns the first found card with the cardName

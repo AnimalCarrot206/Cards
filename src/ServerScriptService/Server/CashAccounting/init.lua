@@ -5,8 +5,6 @@ local MoneyDataStore = DataStoreService:GetDataStore("PlayerStats", "MoneyValue"
 local Class = require(game.ReplicatedStorage.Shared.Class)
 local Balance = require(script.Parent.Balance)
 
-local npcBuyed = game.ServerStorage.BindableEvents.NpcBuyedItem
-
 -- Можно сказать обертка баланса, но более прокаченная
 -- Напоминает паттерн фабрика
 local CashAccouting = Class:extend()
@@ -15,7 +13,7 @@ local playersBalances = {}
 -- Создаем баланс, возвращаем его и запихиваем в список 
 -- балансов игроков, для дальнейшего использования
 function CashAccouting:StartAccounting(player: Player, valueToAdd: number | nil)
-	local createdBalance = Balance.new()
+	local createdBalance = Balance()
 	createdBalance:add(valueToAdd or 0)
 	playersBalances[player.Name] = createdBalance
 	-- Аттрибут используется для связи с клиентом, экономим интернет 0_0

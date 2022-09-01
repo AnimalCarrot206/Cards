@@ -2,14 +2,18 @@
 
 local Class = require(game.ReplicatedStorage.Shared.Class)
 local GoodSignal = require(game.ReplicatedStorage.Shared.GoodSignal)
+local CustomEnum = require(game.ReplicatedStorage.Shared.CustomEnum)
+local Remotes = require(game.ReplicatedStorage.Shared.Remotes)
 
 local CardDecisionmaking = require(game.ServerScriptService.Server.CardDecisionmaking)
 local CardDecksManager = require(game.ServerScriptService.Server.CardDecksManager)
+local AbilityManager
+local Armory = require(game.ServerScriptService.Server.Armory)
 
-local CardUsed = Instance.new("RemoteEvent")
-local CardUsedCancel = Instance.new("RemoteEvent")
-local CardUsedApprove = Instance.new("RemoteEvent")
+local CardUsed = Remotes.CardUsed
+local IsCardCanBeUsed = Remotes.IsCardCanBeUsed
 
+local NOT_YOUR_TURN_ERROR = "Not your turn"
 local WRONG_ARGUMENT_TYPE_ERROR = "Wrong type"
 local WRONG_CARD_ID_ERROR = "Wrong card id"
 local CARD_USING_LIMIT_ERROR = "Maximum cards used"
@@ -30,39 +34,72 @@ local function _checkArgument(arg, type: string)
     return true
 end
 
-local function _handler(player: Player, cardId: string)
-    if player ~= turnOwner then
-        CardUsedCancel:FireClient()
-    end
+local function _checkCardUseArguments(card, ...)
+    local args = {...}
 
-    if #playerCards >= 3 then
-        CardUsedCancel:FireClient(player, CARD_USING_LIMIT_ERROR)
+    if card:getUseType() == CustomEnum.CardUseType.OnePlayerUse then
+        return true
+    elseif card:getUseType() == CustomEnum.CardUseType.TwoPlayerUse then
+        for index, value in ipairs(args) do
+            if typeof(value) == "Instance" and value:IsA("Player") then
+                return true
+            end
+        end
     end
+end
 
-    if not _checkArgument(cardId) then
-        CardUsedCancel:FireClient(player, WRONG_ARGUMENT_TYPE_ERROR)
-    end
+local function _getCard(player: Player, cardId: string, ...)
+    assert(player == turnOwner, NOT_YOUR_TURN_ERROR)
+    assert(#playerCards < 3, CARD_USING_LIMIT_ERROR)
+    assert(_checkArgument(cardId, "string"), WRONG_ARGUMENT_TYPE_ERROR)
 
     local commonDeck = CardDecksManager:getPlayerCommonDeck(player)
     local bonusDeck = CardDecksManager:getPlayerBonusDeck(player)
 
     local foundCard = commonDeck:findCard(cardId) or bonusDeck:findCard(cardId)
 
-    if not foundCard then
-        CardUsedCancel:FireClient(player, WRONG_ARGUMENT_TYPE_ERROR)
+    assert(_checkCardUseArguments(foundCard, ...))
+    assert(foundCard ~= nil, WRONG_CARD_ID_ERROR)
+    return foundCard
+end
+
+local function _checkForGameRules(player: Player, cardId: string)
+    local foundCard = _getCard(player, cardId)
+    local cardName = foundCard:getName()
+
+    local result = false
+
+    if cardName == CustomEnum.Cards["Bang!!"].Name then
+        local count = 0
+        for index, card in ipairs(playerCards) do
+            if card:getName() ~= cardName then
+                continue
+            end
+            count += 1
+        end
+        if count == 0 then
+            result = true
+        end
+        if Armory:getPlayerGun(player) == CustomEnum.Guns["Shawed off"] and count <= 1 then
+            result = true
+        end
+    end
+
+    if cardName == CustomEnum["Cage"].Name then
+        
     end
 end
 
-function CardInput:startListening(player: Player)
-    turnOwner = player
-    cardInputConnection = CardUsed.OnServerEvent:Connect(_handler)
+local function _cardUseHandler(player: Player, cardId: string, ...)
+    local foundCard = _getCard()
+
+    table.insert(playerCards, foundCard)
 end
 
 function CardInput:handOverCards()
     
 end
 
-function CardInput:stopListening()
-    turnOwner = nil
-    cardInputConnection:Disconnect()
-end
+
+CardUsed.OnServerEvent:Connect(_cardUseHandler)
+IsCardCanBeUsed.OnServerInvoke()

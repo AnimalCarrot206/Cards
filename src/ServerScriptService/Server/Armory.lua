@@ -4,7 +4,7 @@ local Players = game:GetService("Players")
 local Class = require(game.ReplicatedStorage.Shared.Class)
 local PlayerStats = require(game.ReplicatedStorage.Shared.PlayerStats)
 
-local RolesManager = require(game.ServerScriptService.Server.RolesManager)
+
 local Guns = require(game.ServerScriptService.Server.Guns)
 
 local Armory = Class:extend()
