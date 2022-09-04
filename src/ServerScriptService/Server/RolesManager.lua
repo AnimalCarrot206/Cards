@@ -1,78 +1,79 @@
 --!strict
-local Players = game.Players
+local Players = game:GetService("Players")
 
 local Class = require(game.ReplicatedStorage.Shared.Class)
 
-local Role = require(game.ServerScriptService.Server.Role)
+local Roles = require(game.ServerScriptService.Server.Roles)
 
 local RolesManager = Class:extend()
 
 local createdRoles = {}
-
-local DEFFAULT_ROLES = {
-	{name = "Sheriff", maxPlayers = 1, assign = function()
-		
-	end},
-
-	{name = "Bandit", maxPlayers = 1, assign = function()
-		
-	end},
-
-	{name = "Cowboy", maxPlayers = 2, assign = function()
-		
-	end},
-
-	{name = "Psycho", maxPlayers = 1, assign = function()
-		
-	end},
-
-	{name = "PlagueDoctor", maxPlayers = 1, assign = function()
-		
-	end}
-}
-
+--[=[
+	Creates all in-game roles, must be called on game start
+]=]
 function RolesManager:createRoles()
-	for index, roleTable: {name: string, maxPlayers: number, assign: () -> ()} in ipairs(DEFFAULT_ROLES) do
-		local createdTeam = Role:new(roleTable.name, roleTable.maxPlayers)
-		createdTeam.PlayerAdded:Connect(roleTable.assign)
+	for roleName, role in pairs(Roles) do
+		local newRole = role()
+		table.insert(createdRoles, newRole)
 	end
 end
-
+--[=[
+	Assigns all players in game to roles, must be called after roles creating
+]=]
 function RolesManager:assignPlayers()
+	assert(#createdRoles > 0)
 	local allPlayers = Players:GetPlayers()
 	
-	for i, role in ipairs(createdRoles) do
-		local randomIndex = math.random(1, #allPlayers)
-		role:assign(allPlayers[randomIndex])
-		table.remove(allPlayers, 1)
+	for roleIndex, role in pairs(createdRoles) do
+		for i = role:getMaxPlayersCount(), 0, -1 do
+			local randomIndex = math.random(1, #allPlayers)
+			local player = allPlayers[randomIndex]
+
+			role:assign(player)
+			table.remove(allPlayers, randomIndex)
+		end
 	end
 end
-
+--[=[
+	Unassigns all players roles, must be called on game ends
+]=]
 function RolesManager:unassignPlayers()
 	local allPlayers = Players:GetPlayers()
 
-	for index, player in ipairs(allPlayers) do
-		player.Team = nil
-		player:LoadCharacter()
+	for roleIndex, role in pairs(createdRoles) do
+		local players = role:getPlayers() :: Array<Player>
+
+		for index, player in ipairs(players) do
+			role:unassign(player)
+		end
+		role:destroy()
+		table.remove(createdRoles, roleIndex)
+		role = nil
 	end
 end
-
+--[=[
+	Returns role associated with name [roleName]
+]=]
 function RolesManager:getRole(roleName: string)
-	for _, role in ipairs(createdRoles) do
+	for roleIndex, role in ipairs(createdRoles) do
 		if role:getName() == roleName then
 			return role
 		end
 	end
 end
-
+--[=[
+	Returns player role
+]=]
 function RolesManager:getPlayerRole(player: Player)
-	for _, role in ipairs(createdRoles) do
+	for roleIndex, role in ipairs(createdRoles) do
 		if role:isPlayerRole(player) == true then
 			return role
 		end
 	end
 end
-
+--[=[
+	Returns all created roles by createRoles() method
+]=]
 function RolesManager:getAllRoles()
 	return createdRoles
 end
