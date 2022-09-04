@@ -3,10 +3,13 @@ local Players = game:GetService("Players")
 
 local Class = require(game.ReplicatedStorage.Shared.Class)
 local GoodSignal = require(game.ReplicatedStorage.Shared.GoodSignal)
-local List = require(game.ReplicatedStorage.Shared.List)
+local Remotes = require(game.ReplicatedStorage.Shared.Remotes)
+local PlayerStats = require(game.ReplicatedStorage.Shared.PlayerStats)
 
-local TurnStartedRemoteEvent = nil :: RemoteEvent
-local TurnEndedRemoteEvent = nil :: RemoteEvent
+
+local TurnStartedRemoteEvent = Remotes.TurnStarted
+local TurnSkippedRemoteEvent = Remotes.TurnSkipped
+local TurnEndedRemoteEvent = Remotes.TurnEnded
 
 local TurnsManager = Class:extend()
 
@@ -15,13 +18,21 @@ TurnsManager.TurnEnded = GoodSignal.new()
 
 local turns: {{Player}} = {}
 
-local function _playerPrioritySort(player1, player2)
-    
+local function _getPlayersSortedBySitPlace()
+    local allPlayers = Players:GetPlayers()
+    local sortedPlayers = {}
+
+    table.foreachi(allPlayers, function(i, player)
+        local sitPlace = PlayerStats:getPlayerSitPlace(player)
+        sortedPlayers[sitPlace] = player
+    end)
+
+    return sortedPlayers
 end
 
 
 function TurnsManager:preloadTurns()
-    local allPlayers = Players:GetPlayers()
+    local allPlayers = _getPlayersSortedBySitPlace()
 
     
     for i, player in ipairs(allPlayers) do
