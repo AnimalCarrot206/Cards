@@ -14,15 +14,19 @@ function CardManager:getCardName(cardId: string): string
     
 end
 
-function CardManager:getCardId(cardName): string
+function CardManager:getCardId(cardName: string): string
     
 end
 
-function CardManager:getCardImage(cardName): string
+function CardManager:getCardImage(cardName: string): string
     
 end
 
-function CardManager:getCardDescription(cardName): string
+function CardManager:getCardDescription(cardName: string): string
+    
+end
+
+function CardManager:useCard(cardId: string)
     
 end
 

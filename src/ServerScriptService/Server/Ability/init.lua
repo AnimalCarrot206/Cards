@@ -1,5 +1,4 @@
 --!strict
-
 local Class = require(game.ReplicatedStorage.Shared.Class)
 local PlayerStats = require(game.ReplicatedStorage.Shared.PlayerStats)
 local CustomEnum = require(game.ReplicatedStorage.Shared.CustomEnum)
@@ -10,23 +9,7 @@ local CardsAction = require(game.ServerScriptService.Server.CardsAction)
 --[[
     _____________________________________
 ]]
-local abilityEnum = CustomEnum.new("Ability", {
-    ["Stained"] = 0,
-    ["Compensation"] = 1,
-    ["Sharp"] = 2,
-    ["Dealer"] = 3,
-    ["Capacious"] = 4,
-    ["Necromancer"] = 5,
-    ["Bounty hunter"] = 6,
-    ["Barman"] = 7,
-    ["Getting along"] = 8,
-    ["Trickster"] = 9,
-    ["Black mark"] = 10,
-    ["Wait what"] = 11,
-    ["Medium"] = 12,
-    ["Hermit"] = 13,
-    ["Die hard"] = 14,
-})
+local abilityEnum = CustomEnum:Find("Ability")
 --[[
     _____________________________________
 ]]
@@ -46,7 +29,6 @@ end
     _____________________________________
 ]]
 local PassiveAbility = ActiveAbility:extend()
-
 function PassiveAbility:activate()
     self._activated = true
 end
@@ -260,4 +242,20 @@ end
 --[[
     _____________________________________
 ]]
-return {}
+return {
+    ["Stained"] = Stained,
+    ["Compensation"] = Compensation,
+    ["Sharp"] = Sharp,
+    ["Dealer"] = Dealer,
+    ["Capacious"] = Capacious,
+    ["Necromancer"] = Necromancer,
+    ["Bounty hunter"] = BountyHunter,
+    ["Barman"] = Barman,
+    ["Getting along"] = GettingAlong,
+    ["Trickster"] = Trickster,
+    ["Black mark"] = BlackMark,
+    ["Wait what"] = WaitWhat,
+    ["Medium"] = Medium,
+    ["Hermit"] = Hermit,
+    ["Die hard"] = DieHard,
+}

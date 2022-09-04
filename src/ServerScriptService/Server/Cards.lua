@@ -12,31 +12,7 @@ local CardDecksManager = require(game.ServerScriptService.Server.CardDecksManage
 local AbilityManager = require(game)
 --local TurnsManager = require(game.ServerScriptService.Server.TurnsManager)
 
-local cardsEnum = CustomEnum.new("Cards", {
-    ["Bang!!"] = 0,
-    ["Miss"] = 1,
-    ["Ambush!"] = 2,
-    ["Lemonade"] = 3,
-    ["Drinks on me"] = 4,
-    ["Present"] = 5,
-    ["Cage"] = 6,
-    ["Blackmail"] = 7,
-    ["Thief"] = 8,
-    ["Reverse"] = 9,
-    ["Exchange"] = 10,
-    ["Duel"] = 11,
-    ["Move"] = 12,
-    ["Mayor's pardon"] = 13,
-
-    ["Shawed off"] = 14,
-    ["Judi"] = 15,
-    ["Navy revolver"] = 16,
-    ["Winchester"] = 17,
-
-    ["Scope"] = 18,
-    ["Brand stool"] = 19,
-    ["Apple juice"] = 20,
-})
+local cardsEnum = CustomEnum:Find("Cards")
 
 local cardTypeEnum = CustomEnum.new("CardUseType", {
     OnePlayerUse = 0,
