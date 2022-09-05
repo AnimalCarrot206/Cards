@@ -8,21 +8,23 @@ local CardUsedEvent = game.ReplicatedStorage.CardUsed :: RemoteEvent
 local CardInput = Class:extend()
 
 function CardInput:listen(turnOwner, cardName: string?)
-    return Promise.fromEvent(CardUsedEvent.OnServerEvent, function(player, name, id)
+    while true do
+        local player, name, id = CardUsedEvent.OnServerEvent:Wait()
         if player ~= turnOwner then
-            return false
+            continue
         end
         if type(id) ~= "string" or type(name) ~= "string" then
-            return false
+
+            continue
         end
         
         cardName = cardName or name
         if cardName ~= name then
-            return false
+            continue
         end
 
-        return true
-    end)
+        return id
+    end
 end
 
 return CardInput

@@ -10,6 +10,7 @@ local CardInput = require(game.ServerScriptService.Server.CardIput)
 local TurnManager = Class:extend()
 
 local inGamePlayers: Array<Player>
+local diasabledTurns: Array<number> = {}
 local currentPlayerIndex = 0
 local turnOwner
 
@@ -19,6 +20,13 @@ end
 
 function TurnManager:nextTurn()
     currentPlayerIndex += 1
+    local disabledTurnsIndex  
+
+    repeat
+        disabledTurnsIndex = table.find(diasabledTurns, currentPlayerIndex)
+        currentPlayerIndex = if #inGamePlayers then 1 else currentPlayerIndex + 1
+    until disabledTurnsIndex == nil
+
     turnOwner = inGamePlayers[currentPlayerIndex]
 
     if currentPlayerIndex == #inGamePlayers then
@@ -27,13 +35,12 @@ function TurnManager:nextTurn()
 end
 
 function TurnManager:beginTurn()
-    return Promise.new(function()
-        
-    end)
+    Remotes.TurnStarted:FireClient(turnOwner)
+
 end
 
 function TurnManager:endTurn()
-    
+    Remotes.TurnEnded:FireClient(turnOwner)
 end
 
 function TurnManager:getTurnOwnerCardUsed()
@@ -41,11 +48,15 @@ function TurnManager:getTurnOwnerCardUsed()
 end
 
 function TurnManager:cardRequest(player, cardName)
-    
+    return CardInput:listen(player, cardName)
 end
 
-function TurnManager:disablePlayerNearestTurn()
-    
+function TurnManager:disablePlayerNearestTurn(player: Player)
+    local playerIndex = table.find(inGamePlayers, player)
+    if not playerIndex then
+        return
+    end
+    table.insert(diasabledTurns, playerIndex)
 end
 
 Players.PlayerRemoving:Connect(function(player)
