@@ -14,7 +14,6 @@ function CardInput:listen(turnOwner, cardName: string?)
             continue
         end
         if type(id) ~= "string" or type(name) ~= "string" then
-
             continue
         end
         
@@ -22,7 +21,6 @@ function CardInput:listen(turnOwner, cardName: string?)
         if cardName ~= name then
             continue
         end
-
         return id
     end
 end
