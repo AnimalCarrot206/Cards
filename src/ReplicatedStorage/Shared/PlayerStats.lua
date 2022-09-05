@@ -7,6 +7,7 @@ local PlayerStats = Class:extend()
 PlayerStats.HealthChanged = GoodSignal.new()
 PlayerStats.RangeChanged = GoodSignal.new()
 PlayerStats.DeffaultRangeChanged = GoodSignal.new()
+PlayerStats.SitPlaceChanged = GoodSignal.new()
 
 local HEALTH_ATTRIBUTE_NAME = "Health"
 local RANGE_ATTRIBUTE_NAME = "Range"
@@ -24,10 +25,10 @@ end
     Sets player health and fires HealthChanged event
 ]=]
 function PlayerStats:setHealth(player: Player, number: number)
-    local previousHealth = self:getHealth(player) or 0
+    local previousHealth = self:getHealth(player)
     player:SetAttribute(HEALTH_ATTRIBUTE_NAME, number)
 
-    self.HealthChanged:Fire(previousHealth, self:getHealth())
+    self.HealthChanged:Fire(previousHealth, number)
 end
 --[=[
     Returns Player's range
@@ -36,10 +37,10 @@ function PlayerStats:getRange(player: Player)
     return player:GetAttribute(RANGE_ATTRIBUTE_NAME)
 end
 --[=[
-    Sets player range and fires RangeChanged event
+    Sets player range and adds deffault range, fires RangeChanged event
 ]=]
 function PlayerStats:setRange(player: Player, number: number)
-    local previousRange = self:getRange(player) or 0
+    local previousRange = self:getRange(player)
     player:SetAttribute(RANGE_ATTRIBUTE_NAME, number + self:getDefaultRange(player))
 
     self.RangeChanged:Fire(previousRange, self:getRange(player))
@@ -57,7 +58,7 @@ function PlayerStats:setDefaultRange(player: Player, number: number)
     local previousValue = self:getDefaultRange(player)
     player:SetAttribute(DEFFAULT_RANGE_ATTRIBUTE_NAME, number)
 
-    self.DeffaultRangeChanged:Fire(previousValue, self:getDefaultRange(player))
+    self.DeffaultRangeChanged:Fire(previousValue, number)
 end
 --[=[
     Returns Player's start deck capacity
@@ -77,7 +78,11 @@ function PlayerStats:getPlayerSitPlace(player: Player)
 end
 
 function PlayerStats:setPlayerSitPlace(player: Player, number: number)
+    assert(number <= 8, "Player sit cannot be greater than 8")
+    local previousValue = self:getPlayerSitPlace(player)
     player:SetAttribute(SIT_PLACE_ATTRIBUTE_NAME, number)
+
+    self.SitPlaceChanged:Fire(previousValue, number)
 end
 
 function PlayerStats:getAdditionalRemoteness(player: Player)

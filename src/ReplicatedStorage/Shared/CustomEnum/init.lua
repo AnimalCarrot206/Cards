@@ -134,4 +134,19 @@ Enums.new("Roles", {
     ["Psycho"] = 4
 })
 
+Enums.new("Guns", {
+    ["Rusty revolver"] = 0,
+    ["Shawed off"] = 1,
+    ["Judi"] = 2,
+    ["Navy revolver"] = 3,
+    ["Winchester"] = 4,
+})
+
+Enums.new("ShootType", {
+    Hit = 0,
+    Miss = 1,
+    Ambush = 2,
+    Duel = 3,
+})
+
 return Enums

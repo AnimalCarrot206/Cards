@@ -4,13 +4,31 @@ local Players = game:GetService("Players")
 local Class = require(game.ReplicatedStorage.Shared.Class)
 local PlayerStats = require(game.ReplicatedStorage.Shared.PlayerStats)
 
-local NO_SIT_PLACE_VALUE = -1
 local NO_OWNER_VALUE = ""
 
 local chairsModels = game.Workspace.Chairs
 local sits = chairsModels:GetChildren()
 
 local Chairs = Class:extend()
+
+local function _onSitChange(previousValue, currentValue)
+    if previousValue == currentValue then
+        return
+    end
+
+    local ownerName = ""
+    for index, chair in ipairs(sits) do
+        if index == previousValue then
+            ownerName = chair:GetAttribute("Owner")
+            chair:SetAttribute("Owner", NO_OWNER_VALUE)
+        end
+    end
+    for index, chair in ipairs(sits) do
+        if index == currentValue then
+            chair:SetAttribute("Owner", ownerName)
+        end
+    end
+end
 
 local function _onPlayerLeave(player: Player)
     for index, chair in ipairs(sits) do
@@ -44,13 +62,6 @@ end
 ]=]
 function Chairs:unassignAllPlayers()
     for _, chair in ipairs(sits) do
-        local ownerName = chair:GetAttribute("Owner")
-        if ownerName == NO_OWNER_VALUE then
-            continue
-        end
-
-        local owner = Players:FindFirstChild(ownerName) :: Player
-        PlayerStats:setPlayerSitPlace(owner, NO_SIT_PLACE_VALUE)
         chair:SetAttribute("Owner", NO_OWNER_VALUE)
     end
 end
@@ -68,5 +79,6 @@ end
     Whenever player leave frees its sit
 ]=]
 Players.PlayerRemoving:Connect(_onPlayerLeave)
+PlayerStats.SitPlaceChanged:Connect(_onSitChange)
 
 return Chairs

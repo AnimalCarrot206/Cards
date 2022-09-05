@@ -3,7 +3,8 @@ local Players = game:GetService("Players")
 
 local Class = require(game.ReplicatedStorage.Shared.Class)
 local PlayerStats = require(game.ReplicatedStorage.Shared.PlayerStats)
-
+local CustomEnum = require(game.ReplicatedStorage.Shared.CustomEnum)
+local shootTypeEnum = CustomEnum:Find("ShootType")
 
 local Guns = require(game.ServerScriptService.Server.Guns)
 
