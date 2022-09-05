@@ -13,6 +13,7 @@ Remotes.TurnStarted = Instance.new("RemoteEvent", Folder)
 Remotes.TurnSkipped = Instance.new("RemoteEvent", Folder)
 Remotes.TurnEnded = Instance.new("RemoteEvent", Folder)
 Remotes.TurnTimeout = Instance.new("RemoteEvent", Folder)
+Remotes.TurnDisabled = Instance.new("RemoteEvent", Folder)
 
 Folder.Name = "Remotes"
 Folder.Parent = game.ReplicatedStorage

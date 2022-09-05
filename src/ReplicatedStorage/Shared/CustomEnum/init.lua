@@ -149,4 +149,10 @@ Enums.new("ShootType", {
     Duel = 3,
 })
 
+Enums.new("TurnStatus", {
+    Created = 0,
+    Begin = 1,
+    End = 2,
+})
+
 return Enums
