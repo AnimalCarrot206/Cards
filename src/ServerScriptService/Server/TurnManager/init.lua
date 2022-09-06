@@ -114,11 +114,14 @@ Players.PlayerRemoving:Connect(function(player)
     end
 end)
 --[=[
-
+    When player skips his turn, ends and create another
 ]=]
 Remotes.TurnSkipped.OnServerEvent:Connect(function(player)
-    
+    if player ~= turnOwner then
+        return
+    end
+    TurnManager:endTurn()
+    TurnManager:nextTurn()
 end)
-
 
 return TurnManager

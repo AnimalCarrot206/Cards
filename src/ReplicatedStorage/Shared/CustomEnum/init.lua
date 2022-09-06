@@ -155,4 +155,10 @@ Enums.new("TurnStatus", {
     End = 2,
 })
 
+Enums.new("CardIdLiteral", {
+    OnPlayerUseCard = 10,
+    SelfUseCard = 20,
+    CouplePlayersUseCard = 30,
+})
+
 return Enums

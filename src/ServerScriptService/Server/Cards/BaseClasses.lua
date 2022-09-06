@@ -2,23 +2,30 @@
 local HttpService = game:GetService("HttpService")
 
 local Class = require(game.ReplicatedStorage.Shared.Class)
+local CustomEnum = require(game.ReplicatedStorage.Shared.CustomEnum)
 
-local Armory = require(game.ServerScriptService.Server.Armory)
-local Chairs = require(game.ServerScriptService.Server.Chairs)
-local CardDeckManager = require(game.ServerScriptService.Server.CardDecksManager)
---[[
-    ______CARDS_BASE_CLASS______
-]]
-local Card = Class:extend()
-Card.Armory = Armory
-Card.Chairs = Chairs
-Card.CardDeckManager = CardDeckManager
+--[=[
+    Типы аргументов Info для классов карт
+]=]
+type CardUseBaseInfo = {
+    cardOwner: Player,
+    cardOwnerDeck: any,
+}
+type SelfUseInfo = CardUseBaseInfo
+type OnPlayerUseInfo = CardUseBaseInfo & {
+    defender: Player,
+    defenderDeck: any,
+}
+type CouplePlayersUseInfo = CardUseBaseInfo & {
+    otherPlayers: {Player}
+}
 --[=[
     Базовый класс карт
 ]=]
-function Card:new(cardName: string)
+local Card = Class:extend()
+function Card:new(cardName: string, idStringStart: string)
     self._name = cardName
-    self._id = HttpService:GenerateGUID(false)
+    self._id = idStringStart..HttpService:GenerateGUID(false)
 end
 
 function Card:destroy()
@@ -28,7 +35,7 @@ end
 --[=[
     Метод использования карты, по умолчанию не реализован
 ]=]
-function Card:use()
+function Card:use(info: CardUseBaseInfo)
     error("Not implemented method!")
 end
 --[=[
@@ -37,7 +44,8 @@ end
 ]=]
 local OnPlayerUseCard = Card:extend()
 function OnPlayerUseCard:new(cardName: string, isAlternates: boolean, alternate: any?)
-    self.super:new(cardName)
+    local idStringStart = CustomEnum.CardIdLiteral.OnPlayerUseCard
+    self.super:new(cardName, idStringStart)
     self._isAlternates = isAlternates
     
     if isAlternates then
@@ -55,14 +63,18 @@ function OnPlayerUseCard:getAlternate()
     return self._alternate :: string
 end
 
-function OnPlayerUseCard:use(attacker: Player, defender: Player)
+function OnPlayerUseCard:use(info: OnPlayerUseInfo)
     error("Not implemented method!")
 end
 --[=[
     Класс карты при использовании которой будет задействован только её владелец
 ]=]
 local SelfUseCard = Card:extend()
-function SelfUseCard:use(player: Player)
+function SelfUseCard:new(cardName: string)
+    local idStringStart = CustomEnum.CardIdLiteral.SelfUseCard
+    self.super:new(cardName, idStringStart)
+end
+function SelfUseCard:use(info: SelfUseInfo)
     error("Not implemented method!")
 end
 --[=[___________]=]--
@@ -76,20 +88,23 @@ local WeaponCard = SelfUseCard:extend()
 local BonusCard = SelfUseCard:extend()
 --[=[___________]=]--
 --[=[
-    Класс карты при использовании которой будут задействованы все игроки
+    Класс карты при использовании которой будут задействованы несколько игроков
 ]=]
-local AllPlayersUseCard = Card:extend()
-function AllPlayersUseCard:use(player: Player)
+local CouplePlayersUseCard = Card:extend()
+function CouplePlayersUseCard:new(cardName: string)
+    local idStringStart = CustomEnum.CardIdLiteral.CouplePlayersUseCard
+    self.super:new(cardName, idStringStart)
+end
+function CouplePlayersUseCard:use(info: CouplePlayersUseInfo)
     error("Not implemented method!")
 end
 --[=[
     
 ]=]
 return {
-    Sandbox = Card,
     OnPlayerUseCard = OnPlayerUseCard,
     SelfUseCard = SelfUseCard,
     WeaponCard = WeaponCard,
     BonusCard = BonusCard,
-    AllPlayersUseCard = AllPlayersUseCard
+    AllPlayersUseCard = CouplePlayersUseCard
 }
