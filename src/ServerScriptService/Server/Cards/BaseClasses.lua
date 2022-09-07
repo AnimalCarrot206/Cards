@@ -43,20 +43,11 @@ end
     2 игрока: владелец, и игрок, которого выбрал владелец карты
 ]=]
 local OnPlayerUseCard = Card:extend()
-function OnPlayerUseCard:new(cardName: string, isAlternates: boolean, alternate: any?)
+function OnPlayerUseCard:new(cardName: string, alternate: any?)
     local idStringStart = CustomEnum.CardIdLiteral.OnPlayerUseCard
     self.super:new(cardName, idStringStart)
-    self._isAlternates = isAlternates
-    
-    if isAlternates then
-        assert(alternate)
-    end
 
     self._alternate = alternate
-end
-
-function OnPlayerUseCard:isAlternates()
-    return self._isAlternates
 end
 
 function OnPlayerUseCard:getAlternate()
