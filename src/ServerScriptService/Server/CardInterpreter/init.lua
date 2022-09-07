@@ -48,3 +48,5 @@ end
 function CardInterpreter:stopInterpreting()
     
 end
+
+return CardInterpreter

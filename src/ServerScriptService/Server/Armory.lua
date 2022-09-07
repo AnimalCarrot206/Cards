@@ -4,16 +4,47 @@ local Players = game:GetService("Players")
 local Class = require(game.ReplicatedStorage.Shared.Class)
 local PlayerStats = require(game.ReplicatedStorage.Shared.PlayerStats)
 local CustomEnum = require(game.ReplicatedStorage.Shared.CustomEnum)
-local shootTypeEnum = CustomEnum:Find("ShootType")
-
-local Guns = require(game.ServerScriptService.Server.Guns)
 
 local Armory = Class:extend()
 
-local createdGuns = {}
+export type Gun = {
+    name: string,
+    range: number,
+    model: Model,
+}
 
-local function _setPlayerAttributes(player: Player, gun)
-    PlayerStats:setRange(player, gun:getRange())
+local Guns: {[string]: Gun} = {
+    ["Rusty revolver"] = {
+        name = "Rusty revolver",
+        range = 3,
+        model = nil
+    },
+    ["Shawed off"] = {
+        name = "Shawed off",
+        range = 2,
+        model = nil,
+    },
+    ["Judi"] = {
+        name = "Judi",
+        range = 3,
+        model = nil
+    },
+    ["Navy revolver"] = {
+        name = "Navy revolver",
+        range = 4,
+        model = nil
+    },
+    ["Winchester"] = {
+        name = "Winchester",
+        range = 7,
+        model = nil
+    },
+}
+
+local createdGuns: {[string]: Gun} = {}
+
+local function _setPlayerAttributes(player: Player, gun: Gun)
+    PlayerStats:setRange(player, gun.range)
 end
 
 local _calculateRange do
@@ -70,8 +101,8 @@ function Armory:prepareGuns()
     local allPlayers = Players:GetPlayers()
 
     for _, player in ipairs(allPlayers) do
-        local newGun = Guns["Rusty revolver"]()
-        table.insert(createdGuns, newGun)
+        local newGun = Guns["Rusty revolver"]
+        createdGuns[player.Name] = newGun
 
         _setPlayerAttributes(player, newGun)
     end
@@ -80,9 +111,7 @@ end
     Takes away all players guns, must be called on game end
 ]=]
 function Armory:disableGuns()
-    for _, gun in ipairs(createdGuns) do
-        gun:destroy()
-    end
+    table.clear(Guns)
 end
 --[=[
     Calculates range between two players, by their sit places
@@ -99,23 +128,22 @@ end
 function Armory:giveGun(player: Player, gunName: string)
     local foundGun = Guns[gunName]
 
-    for index, gun in ipairs(createdGuns) do
-        if gun:getOwner() == player then
-            gun:destroy()
-            table.remove(createdGuns, index)
+    for playerName, gun in pairs(createdGuns) do
+        if playerName == player.Name then
+            createdGuns[playerName] = nil
         end
     end
 
-    local newGun = foundGun(player)
-    table.insert(createdGuns, newGun)
+    local newGun = Guns[gunName]
+    createdGuns[player.Name] = newGun
     _setPlayerAttributes(player, newGun)
 end
 --[=[
     Finds and returns player gun
 ]=]
 function Armory:getPlayerGun(player: Player)
-    for _, gun in ipairs(createdGuns) do
-        if gun:getOwner() == player then
+    for playerName, gun in pairs(createdGuns) do
+        if playerName == player.Name then
             return gun
         end
     end

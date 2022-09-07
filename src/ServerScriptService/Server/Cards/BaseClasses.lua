@@ -7,17 +7,17 @@ local CustomEnum = require(game.ReplicatedStorage.Shared.CustomEnum)
 --[=[
     Типы аргументов Info для классов карт
 ]=]
-type CardUseBaseInfo = {
+export type CardUseBaseInfo = {
     cardOwner: Player,
     cardOwnerDeck: any,
 }
-type SelfUseInfo = CardUseBaseInfo
-type OnPlayerUseInfo = CardUseBaseInfo & {
+export type SelfUseInfo = CardUseBaseInfo
+export type OnPlayerUseInfo = CardUseBaseInfo & {
     defender: Player,
     defenderDeck: any,
 }
-type CouplePlayersUseInfo = CardUseBaseInfo & {
-    otherPlayers: {Player}
+export type CouplePlayersUseInfo = CardUseBaseInfo & {
+    players: {Player}
 }
 --[=[
     Базовый класс карт

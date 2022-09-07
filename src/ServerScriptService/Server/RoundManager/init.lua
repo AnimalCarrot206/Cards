@@ -53,3 +53,4 @@ local function _playerHasJoined()
     end)
 end
 
+return RoundManager
