@@ -38,11 +38,11 @@ function CardDeck:destroy()
     self = nil
 end
 
-function CardDeck:getOwner()
+function CardDeck:getOwner(): Player
     return self._owner
 end
 
-function CardDeck:addCard(cardName: string, isConsideringCapacity: false?)
+function CardDeck:addCard(cardName: string, isConsideringCapacity: true?)
     if isConsideringCapacity == true then
         if #self._cards >= self._capacity then
             error(string.format("Can't add card to player deck %s", self._owner.Name))
@@ -81,11 +81,21 @@ function CardDeck:activateCard(cardId: string, cardInfo)
     card:use(cardInfo)
 end
 
-function CardDeck:getDeckCapacity()
+function CardDeck:getCapacity()
     return self._capacity
 end
 
-function CardDeck:isCardInDeck(cardId: string)
+function CardDeck:getFreeSpace(): number
+    local capacity = self._capacity
+    local occupiedPlace = #self._cards
+
+    if occupiedPlace > capacity then
+        return capacity
+    end
+    return capacity - occupiedPlace
+end
+
+function CardDeck:isCardInDeck(cardId: string): boolean
     return _findCard(self._cards, cardId) ~= nil
 end
 
