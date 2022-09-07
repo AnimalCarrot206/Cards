@@ -100,7 +100,7 @@ Enums.new("Ability", {
     ["Die hard"] = 14,
 })
 
-Enums.new("Cards", {
+Enums.new("Cards.GameCard", {
     ["Bang!!"] = 0,
     ["Miss"] = 1,
     ["Ambush!"] = 2,
@@ -115,15 +115,25 @@ Enums.new("Cards", {
     ["Duel"] = 11,
     ["Move"] = 12,
     ["Mayor's pardon"] = 13,
+})
 
+Enums.new("Cards.WeaponCard", {
     ["Shawed off"] = 14,
     ["Judi"] = 15,
     ["Navy revolver"] = 16,
     ["Winchester"] = 17,
+})
 
+Enums.new("Cards.BonusCard", {
     ["Scope"] = 18,
     ["Brand stool"] = 19,
     ["Apple juice"] = 20,
+})
+
+Enums.new("CardType", {
+    GameCard = 0,
+    WeaponCard = 1,
+    BonusCard = 2,
 })
 
 Enums.new("Roles", {
@@ -160,5 +170,7 @@ Enums.new("CardIdLiteral", {
     SelfUseCard = 20,
     CouplePlayersUseCard = 30,
 })
+
+
 
 return Enums
