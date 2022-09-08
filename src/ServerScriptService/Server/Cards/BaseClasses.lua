@@ -32,6 +32,10 @@ function Card:destroy()
     table.clear(self)
     self = nil
 end
+
+function Card:getName()
+    return self._name
+end
 --[=[
     Метод использования карты, по умолчанию не реализован
 ]=]

@@ -13,35 +13,36 @@ local _getRandomCard do
     local isReverseCreated = false
 
     local chances = {
-        gameCard = 75,
-        weaponCard = 15,
-        bonusCard = 9,
+        GameCard = 75,
+        WeaponCard = 15,
+        BonusCard = 9,
         rarestCard = 1,
     }
 
     _getRandomCard = function()
-        local randomNumber = math.round(math.random()) * 100
-        if randomNumber <= chances.rarestCard and isReverseCreated == false then
-            isReverseCreated = true
-            return CustomEnum.Cards.GameCards["Reverse"].Name
-        end
+        local randomNumber = math.round(math.random() * 100)
         local enumList
+
+        for key, precent in pairs(chances) do
+            if randomNumber <= chances.rarestCard and isReverseCreated == false then
+                isReverseCreated = true
+                return CustomEnum.GameCards["Reverse"].Name
+            end
+
+        end
+
         if randomNumber <= chances.bonusCard then
-            enumList = CustomEnum.Cards.BonusCard:GetEnumItems()
+            enumList = CustomEnum.BonusCard:GetEnumItems()
         end
         if randomNumber <= chances.weaponCard then
-            enumList = CustomEnum.Cards.WeaponCard:GetEnumItems()
+            enumList = CustomEnum.WeaponCard:GetEnumItems()
         end
         if randomNumber <= chances.gameCard then
-            enumList = CustomEnum.Cards.GameCards:GetEnumItems()
+            enumList = CustomEnum.GameCards:GetEnumItems()
         end
         local randomIndex = math.random(1, #enumList)
             
-        for index, cardEnum in ipairs(enumList) do
-            if index == randomIndex then
-                return cardEnum.Name
-            end
-        end
+        return enumList[randomIndex].Name
     end
 end
 
@@ -74,7 +75,9 @@ function CardDeckManager:dealCards()
         local deckFreeSpace = deck:getFreeSpace() :: number
         for i = 1, deckFreeSpace, 1 do
             local card = _getRandomCard()
-            deck:addCard(card)
+            --TESTING
+            deck:_addCard(card)
+            --TESTING
         end
     end
 end

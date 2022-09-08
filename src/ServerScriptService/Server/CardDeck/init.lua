@@ -64,6 +64,14 @@ function CardDeck:removeCard(cardId: string)
     end
 end
 
+function CardDeck:_getCards()
+    return self._cards
+end
+
+function CardDeck:_addCard(cardName)
+    table.insert(self._cards, cardName)
+end
+
 function CardDeck:activateCard(cardId: string, cardInfo)
     local card = _findCard(self._cards, cardId)
 
