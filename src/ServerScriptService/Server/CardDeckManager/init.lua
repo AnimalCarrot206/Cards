@@ -11,38 +11,70 @@ local Decks = {}
 
 local _getRandomCard do
     local isReverseCreated = false
+    local MAX_CHANCE_NUMBER = 100
 
-    local chances = {
-        GameCard = 75,
-        WeaponCard = 15,
-        BonusCard = 9,
-        rarestCard = 1,
+    local chancesForType = {
+        [1] = {name = "BonusCard", percent = 10},
+        [2] = {name = "WeaponCard", percent = 15},
+        [3] = {name = "GameCard", percent = 75},
     }
 
-    _getRandomCard = function()
-        local randomNumber = math.round(math.random() * 100)
-        local enumList
+    local chancesForCards = {
+        ["BonusCard"] = {
+            [1] = {name = "Other", percent = 100}
+        },
+        ["WeaponCard"] = {
+            [1] = {name = "Other", percent = 100}
+        },
+        ["GameCard"] = {
+            [1] = {name = "Reverse", percent = 1},
+            [2] = {name = "Mixed", percent = 99, mixins = {
+                "Bang!!", "Miss", "Other"
+            }}
+        }
+    }
 
-        for key, precent in pairs(chances) do
-            if randomNumber <= chances.rarestCard and isReverseCreated == false then
-                isReverseCreated = true
-                return CustomEnum.GameCards["Reverse"].Name
+    local function _getRandomOther(type: string)
+        local enumArray = CustomEnum[type]:GetEnumItems()
+        local randomNumber = math.random(1, #enumArray)
+
+        return enumArray[randomNumber]
+    end
+
+    local function _getRandomMixin(type: string, mixins: {string})
+        local randomNumber = math.random(1, #mixins)
+        local mixin = mixins[randomNumber]
+        if mixin == "Other" then
+            return _getRandomOther(type)
+        end
+        return mixin
+    end
+
+    local function _getRandomType()
+        local randomNumber = math.random(1, MAX_CHANCE_NUMBER)
+        for index, chanceTable in ipairs(chancesForType) do
+            if randomNumber <= chanceTable.percent then
+                return chanceTable.name :: string
             end
+        end
+    end
 
+    _getRandomCard = function()
+        local type = _getRandomType()
+        local foundTable = chancesForCards[type]
+        
+        for index, chanceInfo in ipairs(foundTable) do
+            if chanceInfo.name == "Other" and chanceInfo.percent == MAX_CHANCE_NUMBER then
+                return _getRandomOther(type)
+            end
+            local randomNumber = math.random(1, MAX_CHANCE_NUMBER)
+            if chanceInfo.name == "Mixed" and chanceInfo.percent == randomNumber then
+                return _getRandomMixin(type, chanceInfo.mixins)
+            end
+            if randomNumber <= chanceInfo.percent then
+                return CustomEnum[type][chanceInfo.name].Name
+            end
         end
-
-        if randomNumber <= chances.bonusCard then
-            enumList = CustomEnum.BonusCard:GetEnumItems()
-        end
-        if randomNumber <= chances.weaponCard then
-            enumList = CustomEnum.WeaponCard:GetEnumItems()
-        end
-        if randomNumber <= chances.gameCard then
-            enumList = CustomEnum.GameCards:GetEnumItems()
-        end
-        local randomIndex = math.random(1, #enumList)
-            
-        return enumList[randomIndex].Name
     end
 end
 
