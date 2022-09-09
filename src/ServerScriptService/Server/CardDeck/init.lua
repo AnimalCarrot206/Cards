@@ -24,7 +24,7 @@ function CardDeck:new(owner: Player, capacity: number?)
     self._owner = owner
     self._cards = {}
     self._capacity = capacity or DEFFAULT_DECK_CAPACITY
-    self.CardActivated = Promise.new()
+    self.CardActivated = GoodSignal.new()
     self.CardAdded = GoodSignal.new()
 end
 

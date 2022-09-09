@@ -38,7 +38,7 @@ local _getRandomCard do
         local enumArray = CustomEnum[type]:GetEnumItems()
         local randomNumber = math.random(1, #enumArray)
 
-        return enumArray[randomNumber]
+        return enumArray[randomNumber].Name
     end
 
     local function _getRandomMixin(type: string, mixins: {string})
@@ -56,22 +56,29 @@ local _getRandomCard do
             if randomNumber <= chanceTable.percent then
                 return chanceTable.name :: string
             end
+            randomNumber -= chanceTable.percent
         end
     end
 
     _getRandomCard = function()
         local type = _getRandomType()
         local foundTable = chancesForCards[type]
-        
+        local randomNumber = math.random(1, MAX_CHANCE_NUMBER)
         for index, chanceInfo in ipairs(foundTable) do
             if chanceInfo.name == "Other" and chanceInfo.percent == MAX_CHANCE_NUMBER then
                 return _getRandomOther(type)
             end
-            local randomNumber = math.random(1, MAX_CHANCE_NUMBER)
-            if chanceInfo.name == "Mixed" and chanceInfo.percent == randomNumber then
+            if chanceInfo.name == "Mixed" and randomNumber <= chanceInfo.percent then
                 return _getRandomMixin(type, chanceInfo.mixins)
             end
             if randomNumber <= chanceInfo.percent then
+                if isReverseCreated == true then
+                    randomNumber = math.random(1, MAX_CHANCE_NUMBER)
+                    continue
+                end
+                if chanceInfo.name == "Reverse" then
+                    isReverseCreated = true
+                end
                 return CustomEnum[type][chanceInfo.name].Name
             end
         end

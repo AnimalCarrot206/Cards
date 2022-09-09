@@ -3,7 +3,10 @@ local HttpService = game:GetService("HttpService")
 
 local Class = require(game.ReplicatedStorage.Shared.Class)
 local CustomEnum = require(game.ReplicatedStorage.Shared.CustomEnum)
+local PlayerStats = require(game.ReplicatedStorage.Shared.PlayerStats)
 
+local TurnManager = require(game.ServerScriptService.Server.TurnManager)
+local Armory = require(game.ServerScriptService.Server.Armory)
 --[=[
     Типы аргументов Info для классов карт
 ]=]
@@ -23,6 +26,9 @@ export type CouplePlayersUseInfo = CardUseBaseInfo & {
     Базовый класс карт
 ]=]
 local Card = Class:extend()
+Card.Armory = Armory
+Card.TurnManager = TurnManager
+Card.PlayerStats = PlayerStats
 function Card:new(cardName: string, idStringStart: string)
     self._name = cardName
     self._id = idStringStart..HttpService:GenerateGUID(false)
@@ -97,6 +103,7 @@ end
     
 ]=]
 return {
+    Sandbox = Card,
     OnPlayerUseCard = OnPlayerUseCard,
     SelfUseCard = SelfUseCard,
     WeaponCard = WeaponCard,
