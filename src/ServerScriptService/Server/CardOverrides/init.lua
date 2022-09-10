@@ -26,3 +26,5 @@ function CardOverrides:getOverride(player, cardName)
     end
     return playerTable[cardName] :: (Card, UseInfo) -> {}
 end
+
+return CardOverrides

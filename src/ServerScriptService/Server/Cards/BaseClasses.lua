@@ -31,16 +31,25 @@ Card.TurnManager = TurnManager
 Card.PlayerStats = PlayerStats
 function Card:new(cardName: string, idStringStart: string)
     self._name = cardName
-    self._id = idStringStart..HttpService:GenerateGUID(false)
+    self._id = tostring(idStringStart)..HttpService:GenerateGUID(false)
 end
-
 function Card:destroy()
     table.clear(self)
     self = nil
 end
-
 function Card:getName()
     return self._name
+end
+function Card:getId()
+    return self._id
+end
+function Card:getUseType()
+    local idLiteral = string.sub(self._id, 1, 2)
+    for index, enum in ipairs(CustomEnum.CardIdLiteral:GetEnumItems()) do
+        if enum.Value == idLiteral then
+            return enum.Name
+        end
+    end
 end
 --[=[
     Метод использования карты, по умолчанию не реализован
@@ -53,15 +62,14 @@ end
     2 игрока: владелец, и игрок, которого выбрал владелец карты
 ]=]
 local OnPlayerUseCard = Card:extend()
-function OnPlayerUseCard:new(cardName: string, alternate: any?)
-    local idStringStart = CustomEnum.CardIdLiteral.OnPlayerUseCard
+OnPlayerUseCard.Alternate = nil
+function OnPlayerUseCard:new(cardName: string)
+    local idStringStart = CustomEnum.CardIdLiteral.OnPlayerUseCard.Value
     self.super:new(cardName, idStringStart)
-
-    self._alternate = alternate
 end
 
 function OnPlayerUseCard:getAlternate()
-    return self._alternate :: string
+    return self.Alternate :: string
 end
 
 function OnPlayerUseCard:use(info: OnPlayerUseInfo)
@@ -72,7 +80,7 @@ end
 ]=]
 local SelfUseCard = Card:extend()
 function SelfUseCard:new(cardName: string)
-    local idStringStart = CustomEnum.CardIdLiteral.SelfUseCard
+    local idStringStart = CustomEnum.CardIdLiteral.SelfUseCard.Value
     self.super:new(cardName, idStringStart)
 end
 function SelfUseCard:use(info: SelfUseInfo)
@@ -93,7 +101,7 @@ local BonusCard = SelfUseCard:extend()
 ]=]
 local CouplePlayersUseCard = Card:extend()
 function CouplePlayersUseCard:new(cardName: string)
-    local idStringStart = CustomEnum.CardIdLiteral.CouplePlayersUseCard
+    local idStringStart = CustomEnum.CardIdLiteral.CouplePlayersUseCard.Value
     self.super:new(cardName, idStringStart)
 end
 function CouplePlayersUseCard:use(info: CouplePlayersUseInfo)

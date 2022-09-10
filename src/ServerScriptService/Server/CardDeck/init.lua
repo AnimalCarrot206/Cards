@@ -107,11 +107,11 @@ function CardDeck:isCardInDeck(cardId: string): boolean
     return _findCard(self._cards, cardId) ~= nil
 end
 
-function CardDeck:cardRequest(cardName: string?)
-    return Promise.new(function(resolve, reject, onCancel)
-        return CardInput:listen(self._owner, cardName)
-    end)
-    :timeout(PLAYER_CARD_INPUT_TIMEOUT_IN_SECONDS)
+function CardDeck:getCard(cardId: string)
+    local foundCard = _findCard(self._cards, cardId)
+    if foundCard then
+        return foundCard
+    end
 end
 
 return CardDeck
