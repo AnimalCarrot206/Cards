@@ -2,6 +2,7 @@
 local Class = require(game.ReplicatedStorage.Shared.Class)
 local GoodSignal = require(game.ReplicatedStorage.Shared.GoodSignal)
 local Promise = require(game.ReplicatedStorage.Shared.Promise)
+local Remotes = require(game.ReplicatedStorage.Shared.Remotes)
 local CustomEnum = require(game.ReplicatedStorage.Shared.CustomEnum)
 
 local Cards = require(game.ServerScriptService.Server.Cards):: {[string]: any}
@@ -24,8 +25,6 @@ function CardDeck:new(owner: Player, capacity: number?)
     self._owner = owner
     self._cards = {}
     self._capacity = capacity or DEFFAULT_DECK_CAPACITY
-    self.CardActivated = GoodSignal.new()
-    self.CardAdded = GoodSignal.new()
 end
 
 function CardDeck:destroy()
@@ -49,8 +48,8 @@ function CardDeck:addCard(cardName: string, isConsideringCapacity: true?)
         end
     end
     local createdCard = Cards[cardName]()
-    table.insert(self._cards)
-    self.CardAdded:Fire(createdCard)
+    table.insert(self._cards, createdCard)
+    Remotes.CardAdded:FireClient(self._owner, cardName, createdCard:getId())
 end
 
 function CardDeck:removeCard(cardId: string)
@@ -59,17 +58,10 @@ function CardDeck:removeCard(cardId: string)
             card:destroy()
             table.remove(self._cards, index)
             card = nil
+            Remotes.CardRemoved:FireClient(self._owner, card:getName(), cardId)
             return
         end
     end
-end
-
-function CardDeck:_getCards()
-    return self._cards
-end
-
-function CardDeck:_addCard(cardName)
-    table.insert(self._cards, cardName)
 end
 
 function CardDeck:activateCard(cardId: string, cardInfo)

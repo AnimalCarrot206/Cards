@@ -74,12 +74,11 @@ function CardInterpreter:startInterpreting(player: Player)
         local cardUseType = card:getUseType()
         local useInfo = _getUseInfo(player, card)
 
-
         if cardUseType == CustomEnum.CardIdLiteral.OnPlayerUseCard.Name then
             local alternate = card:getAlternate()
             if alternate ~= nil then
                 local defenderUsedCard = 
-                _getUsedCard(useInfo.defender)
+                    _getUsedCard(useInfo.defender)
                 :timeout(DEFAULT_TIMEOUT)
                 :andThen(function(card)
                     if card:getName() == alternate then

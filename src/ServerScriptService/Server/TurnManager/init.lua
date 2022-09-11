@@ -103,6 +103,10 @@ Players.PlayerRemoving:Connect(function(player)
     local foundPlayer = table.find(inGamePlayers, player)
     local isPlayerWasInGame = foundPlayer ~= nil
 
+    if isPlayerWasInGame == false then
+        return
+    end
+
     table.remove(inGamePlayers, foundPlayer)
     diasabledTurns[foundPlayer] = nil
     if currentPlayerIndex >= #inGamePlayers then

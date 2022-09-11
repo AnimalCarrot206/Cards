@@ -91,6 +91,13 @@ end
     Класс карты при использовании которой игроку будет выдаваться оружие
 ]]
 local WeaponCard = SelfUseCard:extend()
+function WeaponCard:new(cardName: string, gunName: string)
+    self.super:new(cardName)
+    self._gunName = gunName
+end
+function WeaponCard:use(info: SelfUseInfo)
+    Armory:giveGun(info.cardOwner, self._gunName)
+end
 --[[
     Спорный класс карт, карты этого класса должны хранится в бонусной колоде
 ]]
@@ -116,5 +123,5 @@ return {
     SelfUseCard = SelfUseCard,
     WeaponCard = WeaponCard,
     BonusCard = BonusCard,
-    AllPlayersUseCard = CouplePlayersUseCard
+    CouplePlayersUseCard = CouplePlayersUseCard
 }

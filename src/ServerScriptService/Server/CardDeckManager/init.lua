@@ -113,9 +113,9 @@ function CardDeckManager:dealCards()
     for index, deck in ipairs(Decks) do
         local deckFreeSpace = deck:getFreeSpace() :: number
         for i = 1, deckFreeSpace, 1 do
-            local card = _getRandomCard()
+            local cardName = _getRandomCard()
             --TESTING
-            deck:_addCard(card)
+            deck:addCard(cardName)
             --TESTING
         end
     end

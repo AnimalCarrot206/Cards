@@ -1,27 +1,22 @@
 --!strict
 local Remotes = {}
 
-local Folder = Instance.new("Folder")
+local Folder = game.ReplicatedStorage.Remotes
 
-Remotes.CardAdded = Instance.new("RemoteEvent", Folder)
-Remotes.CardRemoved = Instance.new("RemoteEvent", Folder)
+Remotes.CardAdded = Folder:WaitForChild("CardAdded")
+Remotes.CardRemoved = Folder:WaitForChild("CardRemoved")
 
-Remotes.CardActivateOnClient = Instance.new("RemoteEvent", Folder)
-Remotes.CardActivationFailed = Instance.new("RemoteEvent")
-Remotes.CardActivatedSuccess = Instance.new("RemoteEvent")
+Remotes.CardActivateOnClient = Folder:WaitForChild("CardActivateOnClient")
+Remotes.CardActivationFailed = Folder:WaitForChild("CardActivationFailed")
+Remotes.CardActivatedSuccess = Folder:WaitForChild("CardActivatedSuccess")
 
-Remotes.GetCardUseInfo = Instance.new("RemoteEvent")
-Remotes.InvalidCardUseInfo = Instance.new("RemoteEvent")
+Remotes.GetCardUseInfo = Folder:WaitForChild("GetCardUseInfo")
+Remotes.InvalidCardUseInfo = Folder:WaitForChild("InvalidCardUseInfo")
 
-
-
-Remotes.TurnStarted = Instance.new("RemoteEvent", Folder)
-Remotes.TurnSkipped = Instance.new("RemoteEvent", Folder)
-Remotes.TurnEnded = Instance.new("RemoteEvent", Folder)
-Remotes.TurnTimeout = Instance.new("RemoteEvent", Folder)
-Remotes.TurnDisabled = Instance.new("RemoteEvent", Folder)
-
-Folder.Name = "Remotes"
-Folder.Parent = game.ReplicatedStorage
+Remotes.TurnStarted = Folder:WaitForChild("TurnStarted")
+Remotes.TurnSkipped = Folder:WaitForChild("TurnSkipped")
+Remotes.TurnEnded = Folder:WaitForChild("TurnEnded")
+Remotes.TurnTimeout = Folder:WaitForChild("TurnTimeout")
+Remotes.TurnDisabled = Folder:WaitForChild("TurnDisabled")
 
 return Remotes
