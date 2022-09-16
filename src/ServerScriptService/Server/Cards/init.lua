@@ -17,7 +17,8 @@ export type OnPlayerUseInfo = CardUseBaseInfo & {
     defenderDeck: any,
 }
 export type CouplePlayersUseInfo = CardUseBaseInfo & {
-    players: {Player}
+    players: {Player},
+    decks: {any},
 }
 --[=[
     On player use cards
@@ -35,8 +36,11 @@ end
 function Bang:use(cardUseInfo: OnPlayerUseInfo)
     local attackerAnim = Animations.ATTACKER_SHOOT_ANIMATION_HIT
     local defenderAnim = Animations.DEFENDER_SHOOT_ANIMATION_HIT
+
     local attackerAnimTrack = Animations:animatePlayer(cardUseInfo.cardOwner, attackerAnim)
     local defenderAnimTrack = Animations:animatePlayer(cardUseInfo.defender, defenderAnim)
+
+    Sandbox.PlayerUI:showAttackerCardUsedText()
 
     attackerAnimTrack.Stopped:Connect(function()
         attackerAnimTrack:Destroy()
@@ -61,8 +65,8 @@ function Miss:use(cardUseInfo: OnPlayerUseInfo)
     local attacker = cardUseInfo.defender
     local defender = cardUseInfo.cardOwner
 
-    local attackerAnim = Animations.ATTACKER_SHOOT_ANIMATION_HIT
-    local defenderAnim = Animations.DEFENDER_SHOOT_ANIMATION_HIT
+    local attackerAnim = Animations.ATTACKER_SHOOT_ANIMATION_MISS
+    local defenderAnim = Animations.DEFENDER_SHOOT_ANIMATION_MISS
     local attackerAnimTrack = Animations:animatePlayer(attacker, attackerAnim)
     local defenderAnimTrack = Animations:animatePlayer(defender, defenderAnim)
 
@@ -95,6 +99,23 @@ function Blackmail:new()
     self.super:new(CARD_NAME)
 end
 function Blackmail:use(cardUseInfo: OnPlayerUseInfo)
+    local cards = cardUseInfo.defenderDeck:getCards()
+
+    Sandbox.PlayerUI:showAttackerCardUsedText(cardUseInfo.cardOwner, self.CARD_NAME)
+    Sandbox.PlayerUI:showDefenderCardUsedText(cardUseInfo.defender, self.CARD_NAME)
+    Sandbox.PlayerUI.Blackmail:start(cardUseInfo.cardOwner, cardUseInfo.defender, cards)
+
+    Sandbox.PlayerUI.Blackmail.CardSelected:Connect(function()
+        local cardsIds = Sandbox.PlayerUI.Blackmail:getSelectedCards() :: {string}
+
+        for index, cardId in ipairs(cardsIds) do
+            local card = cardUseInfo.defenderDeck:getCard(cardId)
+
+            cardUseInfo.defenderDeck:removeCard(cardId)
+            cardUseInfo.cardOwnerDeck:addCard(card:getName())
+        end
+        Sandbox.PlayerUI.Blackmail:stop()
+    end)
     
 end
 --[[
@@ -107,7 +128,20 @@ function Thief:new()
     self.super:new(CARD_NAME)
 end
 function Thief:use(cardUseInfo: OnPlayerUseInfo)
+    local cards = cardUseInfo.defenderDeck:getCards()
+
+    Sandbox.PlayerUI:showAttackerCardUsedText(cardUseInfo.cardOwner, self.CARD_NAME)
+    Sandbox.PlayerUI:showDefenderCardUsedText(cardUseInfo.defender, self.CARD_NAME)
+
+    local randomCardId = cards[Random.new():NextInteger(1, #cards)]
+    local randomCard = cardUseInfo.defenderDeck:getCard(randomCardId)
     
+    Sandbox.PlayerUI.Thief:start(cardUseInfo.cardOwner, cardUseInfo.defender, randomCard)
+
+    cardUseInfo.cardOwnerDeck:addCard(randomCard:getName())
+    cardUseInfo.defenderDeck:removeCard(randomCardId)
+    
+    Sandbox.PlayerUI.Thief:stop()
 end
 --[[
     Класс карты Duel
@@ -134,8 +168,25 @@ function Move:use(cardUseInfo: OnPlayerUseInfo)
     local attackerSitPlace = Sandbox.PlayerStats:getPlayerSitPlace(cardUseInfo.cardOwner)
     local defenderSitPlace = Sandbox.PlayerStats:getPlayerSitPlace(cardUseInfo.defender)
 
+    Sandbox.PlayerUI:showText(
+        cardUseInfo.cardOwner,
+        string.format(
+            'You have just chosen %s to switch places with!',
+            cardUseInfo.defender.Name
+        )
+    )
+    Sandbox.PlayerUI:showText(
+        cardUseInfo.defender,
+        string.format(
+            "You were just chosen to move with %s!",
+            cardUseInfo.cardOwner.Name
+        )
+    )
     Sandbox.PlayerStats:setPlayerSitPlace(cardUseInfo.cardOwner, defenderSitPlace)
     Sandbox.PlayerStats:setPlayerSitPlace(cardUseInfo.defender, attackerSitPlace)
+
+    Sandbox.PlayerUI:clearText(cardUseInfo.cardOwner)
+    Sandbox.PlayerUI:clearText(cardUseInfo.defender)
 end
 --[=[
     MIXINS
@@ -163,15 +214,22 @@ function Lemonade:new()
     self.super:new(CARD_NAME)
 end
 function Lemonade:use(cardUseInfo: SelfUseInfo)
-    local animationTrack = Animations:animatePlayer(cardUseInfo.cardOwner)
+    local animation = Animations.PLAYER_USE_LEMONADE
+    local animationTrack = Animations:animatePlayer(cardUseInfo.cardOwner, animation)
 
     animationTrack.Stopped:Connect(function()
         animationTrack:Destroy()
         local previousHealth = Sandbox.PlayerStats:getHealth(cardUseInfo.cardOwner)
         Sandbox.PlayerStats:setHealth(cardUseInfo.cardOwner, previousHealth + 1)
+
+        Sandbox.PlayerUI:clearText(cardUseInfo.cardOwner)
     end)
 
     animationTrack:Play()
+    Sandbox.PlayerUI:showText(
+        cardUseInfo.cardOwner,
+        "Nothing feels that good in desert as a cold lemonade, right?"
+    )
 end
 --[[
     Класс карты Present
@@ -181,8 +239,28 @@ function Present:new()
     local CARD_NAME = CustomEnum.GameCard["Present"].Name
     self.super:new(CARD_NAME)
 end
-function Present:use()
-    
+function Present:use(cardUseInfo: SelfUseInfo)
+    local animation = Animations.PLAYER_USE_PRESENT
+    local animationTrack = Animations:animatePlayer(cardUseInfo.cardOwner, animation)
+
+    animationTrack.Stopped:Connect(function()
+        Sandbox.PlayerUI:clearText(cardUseInfo.cardOwner)
+    end)
+
+    animationTrack.KeyframeReached:Connect(function(keyframeName)
+        if keyframeName == "GiveCardTiming" then
+            for i = 1, 4, 1 do
+                local randomCardName = Sandbox.getRandomCardName()
+                cardUseInfo.cardOwnerDeck:addCard(randomCardName, false)
+            end
+        end
+    end)
+
+    animationTrack:Play()
+    Sandbox.PlayerUI:showText(
+        cardUseInfo.cardOwner,
+        "Who bought a whole present to gift you 4 cards lol?"
+    )
 end
 --[[
     Класс карты Exchange
@@ -192,8 +270,17 @@ function Exchange:new()
     local CARD_NAME = CustomEnum.GameCard["Exchange"].Name
     self.super:new(CARD_NAME)
 end
-function Exchange:use()
-    
+function Exchange:use(cardUseInfo: SelfUseInfo)
+    local cards = cardUseInfo.cardOwnerDeck:getCards()
+
+    for index, card in ipairs(cards) do
+        if BaseClasses.WeaponCard:is(card) then
+            local previousHealth = Sandbox.PlayerStats:getHealth(cardUseInfo.cardOwner)
+            Sandbox.PlayerStats:setHealth(cardUseInfo.cardOwner, previousHealth + 1)
+
+            cardUseInfo.cardOwnerDeck:removeCard(card:getId())
+        end
+    end
 end
 --[=[
     Weapon cards
@@ -245,8 +332,12 @@ function AppleJuice:new()
     local CARD_NAME = CustomEnum.BonusCard["Apple juice"].Name
     self.super:new(CARD_NAME)
 end
-function AppleJuice:use()
-    
+function AppleJuice:use(cardUseInfo: SelfUseInfo)
+    local juiceModel = Instance.new("Model")
+    --Ставим модельку куда-то
+    --Хиллим игрока
+    local previousHealth = Sandbox.PlayerStats:getHealth(cardUseInfo.cardOwner)
+    Sandbox.PlayerStats:setHealth(cardUseInfo.cardOwner, previousHealth + 1)
 end
 --[[
     Класс карты Scope
@@ -256,8 +347,14 @@ function Scope:new()
     local CARD_NAME = CustomEnum.BonusCard["Scope"].Name
     self.super:new(CARD_NAME)
 end
-function Scope:use()
-    
+function Scope:use(cardUseInfo: SelfUseInfo)
+    local scopeModel = Instance.new("Model")
+    --Цепляем модель на оружие
+    --Обновляем UI
+    Sandbox.PlayerUI:putOnScope(cardUseInfo.cardOwner)
+
+    local previousRange = Sandbox.PlayerStats:getRange(cardUseInfo.cardOwner)
+    Sandbox.PlayerStats:setRange(cardUseInfo.cardOwner, previousRange)
 end
 --[[
     Класс карты Brand stool
@@ -267,8 +364,10 @@ function BrandStool:new()
     local CARD_NAME = CustomEnum.BonusCard["Brand stool"].Name
     self.super:new(CARD_NAME)
 end
-function BrandStool:use()
-    
+function BrandStool:use(cardUseInfo: SelfUseInfo)
+    local stoolModel = Instance.new("Model")
+    --Цепляем стул
+    Sandbox.PlayerStats:setAdditionalRemoteness(cardUseInfo.cardOwner, 2)
 end
 --[=[
     Couple players use card
@@ -303,33 +402,43 @@ function DrinksOnMe:new()
     local CARD_NAME = CustomEnum.GameCard["Drinks on me"].Name
     self.super:new(CARD_NAME)
 end
-function DrinksOnMe:use()
-    
+function DrinksOnMe:use(cardUseInfo: CouplePlayersUseInfo)
+    local LemonadeCardName = "Lemonade"
+    Sandbox.PlayerUI:showGlobalText(
+        string.format("%s has generous heart! Enjoy free drinks", cardUseInfo.cardOwner.Name)
+    )
+    cardUseInfo.cardOwnerDeck:addCard(LemonadeCardName)
+    for index, deck in ipairs(cardUseInfo.decks) do
+        if deck:getFreeSpace() == 0 then
+            deck:addCard(LemonadeCardName, false)
+        end
+        deck:addCard(LemonadeCardName, true)
+    end
 end
 
 return {
     ["Bang!!"] = Bang,
     ["Miss"] = Miss,
     ["Ambush!"] = Ambush,
-    ["Lemonade"] = Lemonade,
-    ["Drinks on me"] = DrinksOnMe,
-    ["Present"] = Present,
+    ["Lemonade"] = Lemonade, --
+    ["Drinks on me"] = DrinksOnMe, --
+    ["Present"] = Present, --
     ["Cage"] = Cage,
-    ["Blackmail"] = Blackmail,
-    ["Thief"] = Thief,
+    ["Blackmail"] = Blackmail, --
+    ["Thief"] = Thief, --
     ["Reverse"] = Reverse,
-    ["Exchange"] = Exchange,
+    ["Exchange"] = Exchange, --
     ["Duel"] = Duel,
-    ["Move"] = Move,
+    ["Move"] = Move, --
 
     ["Mayor's pardon"] = MayorsPardon,
 
-    ["Shawed off"] = ShawedOff,
-    ["Judi"] = Judi,
-    ["Navy revolver"] = NavyRevolver,
-    ["Winchester"] = Winchester,
+    ["Shawed off"] = ShawedOff, --
+    ["Judi"] = Judi, --
+    ["Navy revolver"] = NavyRevolver, --
+    ["Winchester"] = Winchester, --
 
-    ["Scope"] = Scope,
-    ["Brand stool"] = BrandStool,
-    ["Apple juice"] = AppleJuice,
+    ["Scope"] = Scope, --
+    ["Brand stool"] = BrandStool, --
+    ["Apple juice"] = AppleJuice, --
 }
