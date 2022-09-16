@@ -106,4 +106,8 @@ function CardDeck:getCard(cardId: string)
     end
 end
 
+function CardDeck:getCards()
+    return self._cards
+end
+
 return CardDeck

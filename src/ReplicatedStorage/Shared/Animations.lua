@@ -12,6 +12,7 @@ Animations.DEFENDER_SHOOT_ANIMATION_MISS = Instance.new("Animation")
 Animations.PLAYER_TAKES_DAMAGE = Instance.new("Animation")
 
 Animations.PLAYER_USE_LEMONADE = Instance.new("Animation")
+Animations.PLAYER_USE_PRESENT = Instance.new("Animation")
 
 function Animations:animatePlayer(player: Player, animation: Animation): AnimationTrack
     local character = player.Character :: Model

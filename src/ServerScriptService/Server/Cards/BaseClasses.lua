@@ -7,6 +7,8 @@ local PlayerStats = require(game.ReplicatedStorage.Shared.PlayerStats)
 
 local TurnManager = require(game.ServerScriptService.Server.TurnManager)
 local Armory = require(game.ServerScriptService.Server.Armory)
+local PlayerCardUI_Server = require(game.ServerScriptService.Server.PlayerCardUI_Server)
+local _getRandomCard = require(game.ServerScriptService.Server.RandomCardChooser)
 --[=[
     Типы аргументов Info для классов карт
 ]=]
@@ -20,7 +22,8 @@ export type OnPlayerUseInfo = CardUseBaseInfo & {
     defenderDeck: any,
 }
 export type CouplePlayersUseInfo = CardUseBaseInfo & {
-    players: {Player}
+    players: {Player},
+    deck: {any},
 }
 --[=[
     Базовый класс карт
@@ -29,6 +32,8 @@ local Card = Class:extend()
 Card.Armory = Armory
 Card.TurnManager = TurnManager
 Card.PlayerStats = PlayerStats
+Card.PlayerUI = PlayerCardUI_Server
+Card.getRandomCardName = _getRandomCard
 function Card:new(cardName: string, idStringStart: string)
     self._name = cardName
     self._id = tostring(idStringStart)..HttpService:GenerateGUID(false)
@@ -97,6 +102,7 @@ function WeaponCard:new(cardName: string, gunName: string)
 end
 function WeaponCard:use(info: SelfUseInfo)
     Armory:giveGun(info.cardOwner, self._gunName)
+    PlayerCardUI_Server:setWeaponIcon(info.cardOwner, self._gunName)
 end
 --[[
     Спорный класс карт, карты этого класса должны хранится в бонусной колоде
