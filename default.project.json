@@ -12,6 +12,13 @@
       "$ignoreUnknownInstances": true,
       "$path": "src/ServerScriptService"
     },
+
+    "StarterPlayer":{
+      "$className": "StarterPlayer",
+      "$ignoreUnknownInstances": true,
+      "$path": "src/StarterPlayer"
+    },
+
     "Workspace": {
       "$className": "Workspace",
       "$ignoreUnknownInstances": true,

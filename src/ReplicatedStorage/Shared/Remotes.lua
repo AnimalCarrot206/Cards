@@ -19,4 +19,9 @@ Remotes.TurnEnded = Folder:WaitForChild("TurnEnded")
 Remotes.TurnTimeout = Folder:WaitForChild("TurnTimeout")
 Remotes.TurnDisabled = Folder:WaitForChild("TurnDisabled")
 
+Remotes.UI.ShowText = Instance.new("RemoteEvent")
+Remotes.UI.ClearText = Instance.new("RemoteEvent")
+Remotes.UI.UpdateWeaponIcon = Instance.new("RemoteEvent")
+Remotes.UI.PutOnScope = Instance.new("RemoteEvent")
+
 return Remotes

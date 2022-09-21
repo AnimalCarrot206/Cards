@@ -44,8 +44,8 @@ function Chairs:assignAllPlayers()
     local allPlayers = Players:GetPlayers()
 
     table.sort(allPlayers, function(plr1, plr2)
-        local one = math.round(math.random() * 100)
-        local two = math.round(math.random() * 100)
+        local one = Random.new():NextInteger(0, 100)
+        local two = Random.new():NextInteger(0, 100)
 
         return one > two
     end)

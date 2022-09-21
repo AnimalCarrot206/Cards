@@ -391,8 +391,22 @@ function Reverse:new()
     local CARD_NAME = CustomEnum.GameCard["Reverse"].Name
     self.super:new(CARD_NAME)
 end
-function Reverse:use()
-    
+function Reverse:use(cardUseInfo: CouplePlayersUseInfo)
+    table.sort(cardUseInfo.players, function()
+        local a = Random.new():NextInteger(0, 100)
+        local b = Random.new():NextInteger(0, 100)
+        return a > b
+    end)
+
+    for index, player in ipairs(cardUseInfo.players) do
+        local additionalRemoteness = Sandbox.PlayerStats:getAdditionalRemoteness(player)
+        if additionalRemoteness > 0 then
+            Sandbox.PlayerStats:setAdditionalRemoteness(player, 0)
+        end
+
+        Sandbox.PlayerStats:setPlayerSitPlace(player, index)
+        Sandbox.PlayerStats:setAdditionalRemoteness(player, additionalRemoteness)
+    end
 end
 --[[
     Класс карты Drinks on me
@@ -426,7 +440,7 @@ return {
     ["Cage"] = Cage,
     ["Blackmail"] = Blackmail, --
     ["Thief"] = Thief, --
-    ["Reverse"] = Reverse,
+    ["Reverse"] = Reverse, --
     ["Exchange"] = Exchange, --
     ["Duel"] = Duel,
     ["Move"] = Move, --
