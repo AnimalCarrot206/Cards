@@ -3,7 +3,9 @@ local Players = game:GetService("Players")
 
 local Class = require(game.ReplicatedStorage.Shared.Class)
 local PlayerStats = require(game.ReplicatedStorage.Shared.PlayerStats)
-local CustomEnum = require(game.ReplicatedStorage.Shared.CustomEnum)
+local Remotes = require(game.ReplicatedStorage.Shared.Remotes)
+
+local gunsContainer = game.ReplicatedStorage.Guns
 
 local Armory = Class:extend()
 
@@ -17,27 +19,27 @@ local Guns: {[string]: Gun} = {
     ["Rusty revolver"] = {
         name = "Rusty revolver",
         range = 3,
-        model = nil
+        model = gunsContainer["Rusty revolver"]
     },
     ["Shawed off"] = {
         name = "Shawed off",
         range = 2,
-        model = nil,
+        model = gunsContainer["Sawed off"],
     },
     ["Judi"] = {
         name = "Judi",
         range = 3,
-        model = nil
+        model = gunsContainer.Judi,
     },
     ["Navy revolver"] = {
         name = "Navy revolver",
         range = 4,
-        model = nil
+        model = gunsContainer["Navy revolver"],
     },
     ["Winchester"] = {
         name = "Winchester",
         range = 7,
-        model = nil
+        model = gunsContainer.Winchester,
     },
 }
 
@@ -105,13 +107,14 @@ function Armory:prepareGuns()
         createdGuns[player.Name] = newGun
 
         _setPlayerAttributes(player, newGun)
+        Remotes.UI.UpdateWeaponIcon:FireClient(player, newGun)
     end
 end
 --[=[
     Takes away all players guns, must be called on game end
 ]=]
 function Armory:disableGuns()
-    table.clear(Guns)
+    table.clear(createdGuns)
 end
 --[=[
     Calculates range between two players, by their sit places
@@ -137,6 +140,7 @@ function Armory:giveGun(player: Player, gunName: string)
     local newGun = Guns[gunName]
     createdGuns[player.Name] = newGun
     _setPlayerAttributes(player, newGun)
+    Remotes.UI.UpdateWeaponIcon:FireClient(player, newGun)
 end
 --[=[
     Finds and returns player gun

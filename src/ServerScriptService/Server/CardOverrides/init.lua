@@ -27,4 +27,8 @@ function CardOverrides:getOverride(player, cardName)
     return playerTable[cardName] :: (Card, UseInfo) -> {}
 end
 
+function CardOverrides:isCardHaveOverride(player, cardName)
+    return self:getOverride(player, cardName) ~= nil
+end
+
 return CardOverrides
