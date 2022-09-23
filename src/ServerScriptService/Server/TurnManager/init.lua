@@ -28,61 +28,48 @@ do
     nextTurn()->beginTurn()->endTurn()
     -----
 ]=]
-function TurnManager:nextTurn()
-    currentPlayerIndex += 1
-    local disabledTurnsIndex  
+    function TurnManager:nextTurn()
+        currentPlayerIndex += 1
+        local disabledTurnsIndex
 
-    repeat
-        disabledTurnsIndex = table.find(diasabledTurns, currentPlayerIndex)
-        currentPlayerIndex = if #inGamePlayers then 1 else currentPlayerIndex + 1
-    until disabledTurnsIndex == nil
+        repeat
+            disabledTurnsIndex = table.find(diasabledTurns, currentPlayerIndex)
+            currentPlayerIndex = if #inGamePlayers then 1 else currentPlayerIndex + 1
+        until disabledTurnsIndex == nil
 
-    turnOwner = inGamePlayers[currentPlayerIndex]
+        turnOwner = inGamePlayers[currentPlayerIndex]
 
-    if currentPlayerIndex == #inGamePlayers then
-        currentPlayerIndex = 0
+        if currentPlayerIndex == #inGamePlayers then
+            currentPlayerIndex = 0
+        end
+        status = CustomEnum.TurnStatus.Created
     end
-    status = CustomEnum.TurnStatus.Created
-end
 --[=[
     Starts created turn, and notifies client.
     Must be called after TurnManager:nextTurn() and before TurnManager:endTurn()
 ]=]
-function TurnManager:beginTurn()
-    Remotes.TurnStarted:FireClient(turnOwner)
-    status = CustomEnum.TurnStatus.Begin
+    function TurnManager:beginTurn()
+        Remotes.TurnStarted:FireClient(turnOwner)
+        status = CustomEnum.TurnStatus.Begin
+    end
 
-end
+    function TurnManager:handleCardInput()
+        
+    end
 --[=[
     Ends created turn, and notifies client.
     Must be called after TurnManager:beginTurn() and before TurnManager:nextTurn()
 ]=]
-function TurnManager:endTurn()
-    Remotes.TurnEnded:FireClient(turnOwner)
-    status = CustomEnum.TurnStatus.End
-end
+    function TurnManager:endTurn()
+        Remotes.TurnEnded:FireClient(turnOwner)
+        status = CustomEnum.TurnStatus.End
+    end
 --[=[
     Returns turn status (CustomEnum.TurnStatus)
 ]=]
-function TurnManager:getTurnStatus()
-    return status
-end
-end
---[=[
-    Retunrs turnOwner player used card from client, !not checked!
-    
-    @Yields
-]=]
-function TurnManager:getTurnOwnerCardUsed()
-    return CardInput:listen(turnOwner)
-end
---[=[
-    Retunrs player used card from client, !not checked!
-
-    @Yields
-]=]
-function TurnManager:cardRequest(player, cardName)
-    return CardInput:listen(player, cardName)
+    function TurnManager:getTurnStatus()
+        return status
+    end
 end
 --[=[
     Disables player nearest player turn

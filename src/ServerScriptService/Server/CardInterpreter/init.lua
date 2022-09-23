@@ -34,18 +34,18 @@ end
 
 function CardInterpreter:interpret(cardId: string, useInfo: UseInfo)
     local foundCard = _findCard(useInfo.CardOwner, cardId)
-    if not foundCard then
+    if foundCard == nil then
         return ErrorCodes.InvalidId
     end
 
     local isUseInfoValid = _checkUseInfo(useInfo, foundCard)
-    if not isUseInfoValid then
+    if isUseInfoValid  == false then
         return ErrorCodes.InvalidUseInfo
     end
     local isCardHaveOverride = 
         CardOverrides:isCardHaveOverride(useInfo.CardOwner, foundCard:getName())
     
-    if isCardHaveOverride then
+    if isCardHaveOverride == true then
         foundCard["use"] = 
             CardOverrides:getOverride(useInfo.CardOwner, foundCard:getName())
     end
