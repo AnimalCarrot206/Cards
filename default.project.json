@@ -23,6 +23,11 @@
       "$className": "Workspace",
       "$ignoreUnknownInstances": true,
       "$path": "src/Workspace"
+    },
+    "ReplicatedFirst":{ 
+      "$className": "ReplicatedFirst",
+      "$ignoreUnknownInstances": true,
+      "$path": "src/ReplicatedFirst"
     }
   }
 }

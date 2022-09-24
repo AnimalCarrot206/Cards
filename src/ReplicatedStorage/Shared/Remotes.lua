@@ -4,23 +4,47 @@ local Remotes = {}
 local Folder = game.ReplicatedStorage.Remotes
 
 Remotes.UI = {}
+--[=[
+    Server sends to client (name: string, id: string)
+]=]
+Remotes.CardAdded = Folder:WaitForChild("CardAdded") :: RemoteEvent
+--[=[
+    Server sends to client (name: string, id: string)
+]=]
+Remotes.CardRemoved = Folder:WaitForChild("CardRemoved") :: RemoteEvent
+--[=[
+    Client sends to server (cardId: string, useInfo)
+]=]
+Remotes.CardActivateOnClient = Folder:WaitForChild("CardActivateOnClient") :: RemoteEvent
+--[=[
+    Server sends to client (message: string)
+]=]
+Remotes.CardActivationFailed = Folder:WaitForChild("CardActivationFailed") :: RemoteEvent
+--[=[
+    Server sends to client ()
+]=]
+Remotes.CardActivatedSuccess = Folder:WaitForChild("CardActivatedSuccess") :: RemoteEvent
 
-Remotes.CardAdded = Folder:WaitForChild("CardAdded")
-Remotes.CardRemoved = Folder:WaitForChild("CardRemoved")
-
-Remotes.CardActivateOnClient = Folder:WaitForChild("CardActivateOnClient")
-Remotes.CardActivationFailed = Folder:WaitForChild("CardActivationFailed")
-Remotes.CardActivatedSuccess = Folder:WaitForChild("CardActivatedSuccess")
-
-Remotes.TurnStarted = Folder:WaitForChild("TurnStarted")
-Remotes.TurnSkipped = Folder:WaitForChild("TurnSkipped")
-Remotes.TurnEnded = Folder:WaitForChild("TurnEnded")
-Remotes.TurnTimeout = Folder:WaitForChild("TurnTimeout")
-Remotes.TurnDisabled = Folder:WaitForChild("TurnDisabled")
-
-Remotes.UI.ShowText = Folder.ShowText
-Remotes.UI.ClearText = Folder.ClearText
-Remotes.UI.UpdateWeaponIcon = Folder.UpdateWeaponIcon --(player, gun: {name, range, model})
-Remotes.UI.PutOnScope = Folder.PutOnScope
+Remotes.TurnStarted = Folder:WaitForChild("TurnStarted") :: RemoteEvent
+Remotes.TurnSkipped = Folder:WaitForChild("TurnSkipped") :: RemoteEvent
+Remotes.TurnEnded = Folder:WaitForChild("TurnEnded") :: RemoteEvent
+Remotes.TurnTimeout = Folder:WaitForChild("TurnTimeout") :: RemoteEvent
+Remotes.TurnDisabled = Folder:WaitForChild("TurnDisabled") :: RemoteEvent
+--[=[
+    Servers sends client/clients (message: string)
+]=]
+Remotes.UI.ShowText = Folder.ShowText  :: RemoteEvent
+--[=[
+    Servers sends to client/clients ()
+]=]
+Remotes.UI.ClearText = Folder.ClearText  :: RemoteEvent
+--[=[
+    Servers sends to client (gun: {name: string, range: number})
+]=]
+Remotes.UI.UpdateWeaponIcon = Folder.UpdateWeaponIcon  :: RemoteEvent
+--[=[
+    Servers sends to client ()
+]=]
+Remotes.UI.PutOnScope = Folder.PutOnScope  :: RemoteEvent
 
 return Remotes
