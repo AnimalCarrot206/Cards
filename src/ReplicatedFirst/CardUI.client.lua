@@ -2,46 +2,8 @@
 local CardManager = require(game.ReplicatedStorage.Client.ClientCardManager)
 local DraggableObject = require(game.ReplicatedStorage.Client.DraggableObject)
 
-local prepareConnections
-local clearConnections
-do
-	prepareConnections = function(guiButton: GuiButton)
-		local mouseEnterConnection
-		local mouseLeaveConnection
-
-		local mouseButtonDubleClickedConnection
-
-		local frameDrag = DraggableObject.new(guiButton)
-
-		do
-			mouseEnterConnection = guiButton.MouseEnter:Connect(function(x, y)
-				
-			end)
-			mouseLeaveConnection = guiButton.MouseLeave:Connect(function(x, y)
-				
-			end)
-		end
-
-		do
-			mouseButtonDubleClickedConnection = guiButton.MouseButton1Click:Connect(function()
-				
-			end)
-		end
-
-		do
-			frameDrag:Enable()
-			frameDrag.DragStarted = function()
-				
-			end
-			frameDrag.Dragged = function(newPosition)
-				
-			end
-			frameDrag.DragEnded = function()
-				
-			end
-		end
-	end
-end
+local Fusion = require(game.ReplicatedStorage.Client.Fusion)
+local New = Fusion.New
 
 local frame = script.Parent.Frame :: Frame
 
@@ -110,18 +72,10 @@ local function createCard(cardName: string, cardId: string)
 	--image.Image = CardManager:getCardImage(cardName)
 end
 
-local function destroyCard(cardName: string, cardId: string)
-	for index, card in ipairs(frame:GetChildren()) do
-		if not card:IsA("TextButton") then return end
-		
-		if 
-			card:GetAttribute("CardName") == cardName and
-			card:GetAttribute("CardId") == cardId 
-		then
-				
-		end
-	end
-end
+local function Card(props)
+	return New "TextButton" {
+		Parent = frame
 
-CardManager.CardAdded:Connect(createCard)
-CardManager.CardRemoved:Connect(destroyCard)
+		
+	}
+end
