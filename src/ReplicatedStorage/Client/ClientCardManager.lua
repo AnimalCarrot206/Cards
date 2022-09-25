@@ -1,5 +1,6 @@
 --!strict
 local Class = require(game.ReplicatedStorage.Shared.Class)
+local CustomEnum = require(game.ReplicatedStorage.Shared.CustomEnum)
 local GoodSignal = require(game.ReplicatedStorage.Shared.GoodSignal)
 local Remotes = require(game.ReplicatedStorage.Shared.Remotes)
 
@@ -40,10 +41,24 @@ function CardManager:getCardDescription(cardName: string): string
     return descriptions[cardName]
 end
 --[=[
+    Returns type of how card should be use
+]=]
+function CardManager:getUseType(cardId: string): string
+    local cardIdLiteral = tonumber(cardId:sub(1,2))
+    if not cardIdLiteral then
+        error(string.format("cardId %s isn't valid", cardId))
+    end
+    for index, enum in ipairs(CustomEnum.CardIdLiteral:GetEnumItems()) do
+        if enum.Value == cardIdLiteral then
+            return enum.Name :: string
+        end
+    end
+end
+--[=[
     Fires server with given cardId and useInfo
 ]=]
 function CardManager:useCard(cardId: string, useInfo)
-    Remotes.CardActivateOnClient:Fire(cardId, useInfo)
+    Remotes.CardActivateOnClient:FireServer(cardId, useInfo)
 end
 --[=[
     When card was added to player deck caches it and fire event

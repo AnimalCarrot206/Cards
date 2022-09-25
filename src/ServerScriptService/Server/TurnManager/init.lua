@@ -6,7 +6,7 @@ local Remotes = require(game.ReplicatedStorage.Shared.Remotes)
 local Promise = require(game.ReplicatedStorage.Shared.Promise)
 local CustomEnum = require(game.ReplicatedStorage.Shared.CustomEnum)
 
-local CardInput = require(game.ServerScriptService.Server.CardIput)
+local CardInput = require(game.ServerScriptService.Server.CardInput)
 
 local TurnManager = Class:extend()
 

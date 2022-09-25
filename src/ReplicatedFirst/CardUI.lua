@@ -6,11 +6,8 @@ local Fusion = require(game.ReplicatedStorage.Client.Fusion)
 local New = Fusion.New
 local Children = Fusion.Children
 
-local frame = script.Parent.Frame :: Frame
-
-local function Card(props: {CardName: string, CardId: string})
+local function Card(props: {CardName: string, CardId: string, StartPos: UDim2})
 	return New "TextButton" {
-		Parent = frame,
 
 		Name = props.CardName,
 		Text = "",
@@ -19,6 +16,7 @@ local function Card(props: {CardName: string, CardId: string})
 		ClipsDescendants = true,
 		LayoutOrder = 1,
 		Size = UDim2.fromScale(0.15, 0.9),
+		AnchorPoint = Vector2.new(0.5, 0.5),
 
 		[Children] = {
 			New "UICorner" {
@@ -30,7 +28,7 @@ local function Card(props: {CardName: string, CardId: string})
 				AspectType = Enum.AspectType.ScaleWithParentSize,
 				DominantAxis = Enum.DominantAxis.Height,
 			},
-			New "Label" {
+			New "TextLabel" {
 				Name = "Label",
 				FontFace = Font.new(
 	  		"rbxasset://fonts/families/Arial.json",

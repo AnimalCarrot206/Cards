@@ -14,7 +14,7 @@ function CardDeckManager:prepareDecks(inGamePlayers: {Player})
     for index, player in ipairs(inGamePlayers) do
         local createdDeck = CardDeck(player, PlayerStats:getStartDeckCapacity(player))
         table.insert(Decks, createdDeck)
-        self:dealCards()
+        self:dealCardsToAllPlayers()
     end
 end
 

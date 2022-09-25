@@ -10,17 +10,20 @@ local UDim2_new = UDim2.new
 
 local UserInputService = game:GetService("UserInputService")
 
+local GoodSignal = require(game.ReplicatedStorage.Shared.GoodSignal)
+
 local DraggableObject 		= {}
 DraggableObject.__index 	= DraggableObject
 
 -- Sets up a new draggable object
 function DraggableObject.new(Object)
-	local self 			= {}
-	self.Object			= Object
-	self.DragStarted	= nil
-	self.DragEnded		= nil
-	self.Dragged		= nil
-	self.Dragging		= false
+	local self = {}
+	self.Object = Object
+	self.DragStarted = GoodSignal.new()
+	self.DragEnded = GoodSignal.new()
+	self.Dragged = GoodSignal.new()
+	self.Dragging = false
+	self.Enabled = false
 	
 	setmetatable(self, DraggableObject)
 	
@@ -29,11 +32,12 @@ end
 
 -- Enables dragging
 function DraggableObject:Enable()
-	local object			= self.Object
-	local dragInput			= nil
-	local dragStart			= nil
-	local startPos			= nil
-	local preparingToDrag	= false
+	if self.Enabled == true then return end
+	local object = self.Object
+	local dragInput = nil
+	local dragStart = nil
+	local startPos = nil
+	local preparingToDrag = false
 	
 	-- Updates the element
 	local function update(input)
@@ -62,8 +66,8 @@ function DraggableObject:Enable()
 					self.Dragging = false
 					connection:Disconnect()
 					
-					if self.DragEnded and not preparingToDrag then
-						self.DragEnded()
+					if not preparingToDrag then
+						self.DragEnded:Fire()
 					end
 					
 					preparingToDrag = false
@@ -87,9 +91,9 @@ function DraggableObject:Enable()
 		if preparingToDrag then
 			preparingToDrag = false
 			
-			if self.DragStarted then
-				self.DragStarted()
-			end
+			
+			self.DragStarted:Fire()
+
 			
 			self.Dragging	= true
 			dragStart 		= input.Position
@@ -99,15 +103,15 @@ function DraggableObject:Enable()
 		if input == dragInput and self.Dragging then
 			local newPosition = update(input)
 			
-			if self.Dragged then
-				self.Dragged(newPosition)
-			end
+			self.Dragged:Fire(newPosition)
 		end
 	end)
+	self.Enabled = true
 end
 
 -- Disables dragging
 function DraggableObject:Disable()
+	if self.Enabled == false then return end
 	self.InputBegan:Disconnect()
 	self.InputChanged:Disconnect()
 	self.InputChanged2:Disconnect()
@@ -115,10 +119,9 @@ function DraggableObject:Disable()
 	if self.Dragging then
 		self.Dragging = false
 		
-		if self.DragEnded then
-			self.DragEnded()
-		end
+		self.DragEnded:Fire()
 	end
+	self.Enabled = false
 end
 
 return DraggableObject
