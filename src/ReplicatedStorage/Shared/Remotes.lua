@@ -46,5 +46,9 @@ Remotes.UI.UpdateWeaponIcon = Folder.UpdateWeaponIcon  :: RemoteEvent
     Servers sends to client ()
 ]=]
 Remotes.UI.PutOnScope = Folder.PutOnScope  :: RemoteEvent
+--[=[
+    Servers sends to client ()
+]=]
+Remotes.UI.CardUIDIsabled = Folder:WaitForChild("CardUIDIsabled") :: RemoteEvent
 
 return Remotes

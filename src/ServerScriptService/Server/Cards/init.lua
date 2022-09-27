@@ -7,19 +7,10 @@ local Sandbox = BaseClasses.Sandbox
 --[=[
     Типы аргументов Info для классов карт
 ]=]
-export type CardUseBaseInfo = {
-    cardOwner: Player,
-    cardOwnerDeck: any,
-}
-export type SelfUseInfo = CardUseBaseInfo
-export type OnPlayerUseInfo = CardUseBaseInfo & {
-    defender: Player,
-    defenderDeck: any,
-}
-export type CouplePlayersUseInfo = CardUseBaseInfo & {
-    players: {Player},
-    decks: {any},
-}
+local UseInfo = require(game.ServerScriptService.Server.UseInfo)
+export type SelfUseInfo = UseInfo.SelfUseInfo
+export type OnPlayerUseInfo = UseInfo.OnPlayerUseInfo
+export type CouplePlayersUseInfo = UseInfo.CouplePlayersUseInfo
 --[=[
     On player use cards
 ]=]
@@ -87,7 +78,38 @@ function Cage:new()
     self.super:new(CARD_NAME)
 end
 function Cage:use(cardUseInfo: OnPlayerUseInfo)
+    Sandbox.PlayerUI:showText(cardUseInfo.defender,
+        string.format(
+            "%s just dropped cage on you, you have to skip one turn!",
+            cardUseInfo.cardOwner.Name
+        )
+    )
+    Sandbox.PlayerUI:showText(cardUseInfo.cardOwner,
+        string.format(
+            "You just dropped cage on %s, he skips one turn now!",
+            cardUseInfo.defender.Name
+        )
+    )
+    local defenderAnimation = Animations.PLAYER_GOES_TO_JAIL
+    local animationTrack = 
+        Animations:animatePlayer(cardUseInfo.cardOwner, defenderAnimation)
     
+    animationTrack.Stopped:Connect(function()
+        animationTrack:Destroy()
+        Sandbox.PlayerStats.ChangeableCardBehavior.IsPlayerTurnDisabled = true
+        Sandbox.PlayerUI:disableCardUse()
+    end)
+    
+    animationTrack:Play()
+    coroutine.wrap(function()
+        repeat
+            task.wait()
+        until Sandbox.PlayerStats.ChangeableCardBehavior.IsPlayerTurnDisabled ~= false
+        local animation = Animations.PLAYER_FREES_OUT_OF_JAIL
+        local animationTrack =
+            Animations:animatePlayer(cardUseInfo.defender, animation)
+        animationTrack:Play()
+    end)()
 end
 --[[
     Класс карты Blackmail
@@ -101,22 +123,42 @@ end
 function Blackmail:use(cardUseInfo: OnPlayerUseInfo)
     local cards = cardUseInfo.defenderDeck:getCards()
 
-    Sandbox.PlayerUI:showAttackerCardUsedText(cardUseInfo.cardOwner, self.CARD_NAME)
-    Sandbox.PlayerUI:showDefenderCardUsedText(cardUseInfo.defender, self.CARD_NAME)
+    Sandbox.PlayerUI:showText(cardUseInfo.cardOwner,
+        string.format( "You have chosen %s as a victim!", cardUseInfo.defender.Name)
+    )
+    
+    task.wait(3)
+    Sandbox.PlayerUI:showText(cardUseInfo.cardOwner,
+        string.format( "Choose one card which you want claim!", cardUseInfo.defender.Name)
+    )
+    Sandbox.PlayerUI:showText(cardUseInfo.defender,
+        string.format(
+            "“%s decided to blackmail you! He will leave for small treat",
+            cardUseInfo.defender.Name
+        )
+    )
+
     Sandbox.PlayerUI.Blackmail:start(cardUseInfo.cardOwner, cardUseInfo.defender, cards)
 
     Sandbox.PlayerUI.Blackmail.CardSelected:Connect(function()
-        local cardsIds = Sandbox.PlayerUI.Blackmail:getSelectedCards() :: {string}
+        local cardId = Sandbox.PlayerUI.Blackmail:getSelectedCard() :: {string}
+        local card = cardUseInfo.defenderDeck:getCard(cardId)
 
-        for index, cardId in ipairs(cardsIds) do
-            local card = cardUseInfo.defenderDeck:getCard(cardId)
-
-            cardUseInfo.defenderDeck:removeCard(cardId)
-            cardUseInfo.cardOwnerDeck:addCard(card:getName())
-        end
+        cardUseInfo.cardOwnerDeck:addCard(card:getName())
+        cardUseInfo.defenderDeck:removeCard(cardId)
+        
+        Sandbox.PlayerUI:showText(cardUseInfo.cardOwner,
+        string.format( "%s was added to your deck", card:getName())
+        )
+        Sandbox.PlayerUI:showText(cardUseInfo.defender,
+            string.format(
+            "%s has chosen %s as a treat, it was removed from your play deck ",
+            cardUseInfo.cardOwner.Name,
+            card:getName()
+            )
+        )
         Sandbox.PlayerUI.Blackmail:stop()
     end)
-    
 end
 --[[
     Класс карты Thief
@@ -130,18 +172,32 @@ end
 function Thief:use(cardUseInfo: OnPlayerUseInfo)
     local cards = cardUseInfo.defenderDeck:getCards()
 
-    Sandbox.PlayerUI:showAttackerCardUsedText(cardUseInfo.cardOwner, self.CARD_NAME)
-    Sandbox.PlayerUI:showDefenderCardUsedText(cardUseInfo.defender, self.CARD_NAME)
+    Sandbox.PlayerUI:showText(cardUseInfo.cardOwner,
+        string.format(
+            "You have just chosen a %s as a victim! ",
+            cardUseInfo.defender.Name
+        )
+    )
+    task.wait(3)
 
     local randomCardId = cards[Random.new():NextInteger(1, #cards)]
     local randomCard = cardUseInfo.defenderDeck:getCard(randomCardId)
-    
-    Sandbox.PlayerUI.Thief:start(cardUseInfo.cardOwner, cardUseInfo.defender, randomCard)
 
+    Sandbox.PlayerUI:showText(cardUseInfo.cardOwner,
+        string.format(
+            "A %s was added to your play deck!",
+            randomCard:getName()
+        )
+    )
+    Sandbox.PlayerUI:showText(cardUseInfo.defender,
+        string.format(
+            "%s just stole a %s from your play deck!",
+            cardUseInfo.cardOwner.Name,
+            randomCard:getName()
+        )
+    )
     cardUseInfo.cardOwnerDeck:addCard(randomCard:getName())
     cardUseInfo.defenderDeck:removeCard(randomCardId)
-    
-    Sandbox.PlayerUI.Thief:stop()
 end
 --[[
     Класс карты Duel
@@ -199,8 +255,18 @@ function MayorsPardon:new()
     local CARD_NAME = CustomEnum.GameCard["Mayor's pardon"].Name
     self.super:new(CARD_NAME)
 end
-function MayorsPardon:use()
-    
+function MayorsPardon:use(cardUseInfo: SelfUseInfo | OnPlayerUseInfo)
+    if cardUseInfo.defender then
+        Sandbox.PlayerUI:showText(cardUseInfo.cardOwner,
+            string.format("You have just chosen %s to pardon him!", cardUseInfo.defender.Name)
+        )
+        Sandbox.PlayerUI:showText(cardUseInfo.defender,
+            string.format("You were chosen by %s to pardon!", cardUseInfo.cardOwner)
+        )
+    else
+        Sandbox.PlayerUI:showText(cardUseInfo.cardOwner, "You were pardoned by Mayor!")
+    end
+    Sandbox.PlayerStats.ChangeableCardBehavior.IsPlayerTurnDisabled = false
 end
 --[=[
     Self use cards
@@ -437,7 +503,7 @@ return {
     ["Lemonade"] = Lemonade, --
     ["Drinks on me"] = DrinksOnMe, --
     ["Present"] = Present, --
-    ["Cage"] = Cage,
+    ["Cage"] = Cage, --
     ["Blackmail"] = Blackmail, --
     ["Thief"] = Thief, --
     ["Reverse"] = Reverse, --
@@ -445,7 +511,7 @@ return {
     ["Duel"] = Duel,
     ["Move"] = Move, --
 
-    ["Mayor's pardon"] = MayorsPardon,
+    ["Mayor's pardon"] = MayorsPardon, --
 
     ["Shawed off"] = ShawedOff, --
     ["Judi"] = Judi, --

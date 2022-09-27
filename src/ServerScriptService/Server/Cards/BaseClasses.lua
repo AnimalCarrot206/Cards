@@ -12,25 +12,12 @@ local _getRandomCard = require(game.ServerScriptService.Server.RandomCardChooser
 --[=[
     Типы аргументов Info для классов карт
 ]=]
-export type CardUseBaseInfo = {
-    cardOwner: Player,
-    cardOwnerDeck: any,
-}
-export type SelfUseInfo = CardUseBaseInfo
-export type OnPlayerUseInfo = CardUseBaseInfo & {
-    defender: Player,
-    defenderDeck: any,
-}
-export type CouplePlayersUseInfo = CardUseBaseInfo & {
-    players: {Player},
-    deck: {any},
-}
+local UseInfo = require(game.ServerScriptService.Server.UseInfo)
 --[=[
     Базовый класс карт
 ]=]
 local Card = Class:extend()
 Card.Armory = Armory
-Card.TurnManager = TurnManager
 Card.PlayerStats = PlayerStats
 Card.PlayerUI = PlayerCardUI_Server
 Card.getRandomCardName = _getRandomCard
@@ -52,14 +39,14 @@ function Card:getUseType()
     local idLiteral = string.sub(self._id, 1, 2)
     for index, enum in ipairs(CustomEnum.CardIdLiteral:GetEnumItems()) do
         if enum.Value == idLiteral then
-            return enum.Name
+            return enum.Name :: string
         end
     end
 end
 --[=[
     Метод использования карты, по умолчанию не реализован
 ]=]
-function Card:use(info: CardUseBaseInfo)
+function Card:use(info: UseInfo.CardUseBaseInfo)
     error("Not implemented method!")
 end
 --[=[
@@ -77,7 +64,7 @@ function OnPlayerUseCard:getAlternate()
     return self.Alternate :: string
 end
 
-function OnPlayerUseCard:use(info: OnPlayerUseInfo)
+function OnPlayerUseCard:use(info: UseInfo.OnPlayerUseInfo)
     error("Not implemented method!")
 end
 --[=[
@@ -88,7 +75,7 @@ function SelfUseCard:new(cardName: string)
     local idStringStart = CustomEnum.CardIdLiteral.SelfUseCard.Value
     self.super:new(cardName, idStringStart)
 end
-function SelfUseCard:use(info: SelfUseInfo)
+function SelfUseCard:use(info: UseInfo.SelfUseInfo)
     error("Not implemented method!")
 end
 --[=[___________]=]--
@@ -100,7 +87,7 @@ function WeaponCard:new(cardName: string, gunName: string)
     self.super:new(cardName)
     self._gunName = gunName
 end
-function WeaponCard:use(info: SelfUseInfo)
+function WeaponCard:use(info: UseInfo.SelfUseInfo)
     Armory:giveGun(info.cardOwner, self._gunName)
     PlayerCardUI_Server:setWeaponIcon(info.cardOwner, self._gunName)
 end
@@ -117,7 +104,7 @@ function CouplePlayersUseCard:new(cardName: string)
     local idStringStart = CustomEnum.CardIdLiteral.CouplePlayersUseCard.Value
     self.super:new(cardName, idStringStart)
 end
-function CouplePlayersUseCard:use(info: CouplePlayersUseInfo)
+function CouplePlayersUseCard:use(info: UseInfo.CouplePlayersUseInfo)
     error("Not implemented method!")
 end
 --[=[

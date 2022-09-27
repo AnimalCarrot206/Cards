@@ -5,10 +5,13 @@ local Class = require(game.ReplicatedStorage.Shared.Class)
 local Remotes = require(game.ReplicatedStorage.Shared.Remotes)
 local Promise = require(game.ReplicatedStorage.Shared.Promise)
 local CustomEnum = require(game.ReplicatedStorage.Shared.CustomEnum)
+local PlayerUI = require(game.ServerScriptService.Server.PlayerCardUI_Server)
 
-local CardInput = require(game.ServerScriptService.Server.CardInput)
+local CardInterpreter = require(game.ServerScriptService.Server.CardInterpreter)
 
 local TurnManager = Class:extend()
+
+local CARD_INPUT_TIMEOUT = 20
 
 local inGamePlayers: Array<Player>
 local diasabledTurns: Array<number> = {}
@@ -53,8 +56,24 @@ do
         status = CustomEnum.TurnStatus.Begin
     end
 
-    function TurnManager:handleCardInput()
-        
+    function TurnManager:handleCardInput(inputPlayer: Player)
+        local p = Promise.fromEvent(Remotes.CardActivateOnClient.OnServerEvent,
+            function(player: Player, cardId: string, ...)
+            if not cardId then
+                return false
+            end
+            local useInfo = CardInterpreter:getUseInfo(player, cardId, ...)
+            local errorCode, card = CardInterpreter:interpret(cardId, useInfo)
+            if errorCode ~= "Success" then
+                Remotes.CardActivationFailed:FireClient(player, errorCode)
+                return false
+            end
+            return true
+        end)
+        :timeout(CARD_INPUT_TIMEOUT)
+        :andThen(function(player: Player, cardId: string, ...)
+            
+        end)
     end
 --[=[
     Ends created turn, and notifies client.

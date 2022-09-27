@@ -14,6 +14,9 @@ Animations.PLAYER_TAKES_DAMAGE = Instance.new("Animation")
 Animations.PLAYER_USE_LEMONADE = Instance.new("Animation")
 Animations.PLAYER_USE_PRESENT = Instance.new("Animation")
 
+Animations.PLAYER_GOES_TO_JAIL = Instance.new("Animation")
+Animations.PLAYER_FREES_OUT_OF_JAIL = Instance.new("Animation")
+
 function Animations:animatePlayer(player: Player, animation: Animation): AnimationTrack
     local character = player.Character :: Model
     local humanoid = character:FindFirstChildOfClass("Humanoid") :: Humanoid

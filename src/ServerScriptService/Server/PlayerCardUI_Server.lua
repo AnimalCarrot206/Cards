@@ -31,5 +31,8 @@ function PlayerCardUI_Server:putOnScope(player: Player)
     Remotes.UI.PutOnScope:FireClient(player)
 end
 
+function PlayerCardUI_Server:disableCardUse(player: Player)
+    Remotes.UI.CardUIDIsabled:Fire(player)
+end
 
 return PlayerCardUI_Server

@@ -44,7 +44,7 @@ end
     Returns Player's default range
 ]=]
 function PlayerStats:getDefaultRange(player: Player)
-    return player:GetAttribute(names.DEFAULT_RANGE_ATTRIBUTE_NAME)
+    return player:GetAttribute(names.DEFAULT_RANGE_ATTRIBUTE_NAME) or 0
 end
 --[=[
     Sets player default range and fires DeffaultRangeChanged event
@@ -56,7 +56,7 @@ end
     Returns Player's start deck capacity
 ]=]
 function PlayerStats:getStartDeckCapacity(player: Player)
-    return player:GetAttribute(names.START_DECK_CAPACITY_ATTRIBUTE_NAME)
+    return player:GetAttribute(names.START_DECK_CAPACITY_ATTRIBUTE_NAME) or 6
 end
 --[=[
     Sets player's start deck capacity
@@ -68,7 +68,7 @@ end
     Returns Player's health
 ]=]
 function PlayerStats:getHealth(player: Player)
-    return player:GetAttribute(names.HEALTH_ATTRIBUTE_NAME)
+    return player:GetAttribute(names.HEALTH_ATTRIBUTE_NAME) or 0
 end
 --[=[
     Sets player health and fires HealthChanged event
@@ -80,7 +80,7 @@ end
     Returns Player's range
 ]=]
 function PlayerStats:getRange(player: Player)
-    return player:GetAttribute(names.RANGE_ATTRIBUTE_NAME)
+    return player:GetAttribute(names.RANGE_ATTRIBUTE_NAME) or 0
 end
 --[=[
     Sets player range and adds deffault range, fires RangeChanged event
@@ -98,7 +98,7 @@ function PlayerStats:setDeckCapacity(player: Player, number: number)
 end
 
 function PlayerStats:getPlayerSitPlace(player: Player)
-    return player:GetAttribute(names.SIT_PLACE_ATTRIBUTE_NAME) :: number
+    return player:GetAttribute(names.SIT_PLACE_ATTRIBUTE_NAME) or -1
 end
 
 function PlayerStats:setPlayerSitPlace(player: Player, number: number)
@@ -107,7 +107,7 @@ function PlayerStats:setPlayerSitPlace(player: Player, number: number)
 end
 
 function PlayerStats:getAdditionalRemoteness(player: Player)
-    return player:GetAttribute(names.ADDITIONAL_REMOTENESS_ATTRIBUTE_NAME)
+    return player:GetAttribute(names.ADDITIONAL_REMOTENESS_ATTRIBUTE_NAME) or 0
 end
 
 function PlayerStats:setAdditionalRemoteness(player: Player, number: number)
@@ -131,5 +131,9 @@ do
         end)
     end
 end
+
+PlayerStats.ChangeableCardBehavior = {}
+PlayerStats.ChangeableCardBehavior.IsPlayerCanUseDobuleShoot = false
+PlayerStats.ChangeableCardBehavior.IsPlayerTurnDisabled = false
 
 return PlayerStats

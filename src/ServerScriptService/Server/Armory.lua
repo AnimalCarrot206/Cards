@@ -53,10 +53,8 @@ local _calculateRange = require(game.ReplicatedStorage.Shared.CalculateRange)
 --[=[
     Gives to all players Rusty Revolver, must be called on game start
 ]=]
-function Armory:prepareGuns()
-    local allPlayers = Players:GetPlayers()
-
-    for _, player in ipairs(allPlayers) do
+function Armory:prepareGuns(inGamePlayers: {Player})
+    for _, player in ipairs(inGamePlayers) do
         local newGun = Guns["Rusty revolver"]
         createdGuns[player.Name] = newGun
 

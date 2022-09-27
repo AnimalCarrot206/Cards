@@ -60,15 +60,15 @@ end
 --[=[
     Assign all players on a random sit, must be called on game start
 ]=]
-function Chairs:assignPlayers(players: {})
-    table.sort(players, function(plr1, plr2)
+function Chairs:assignPlayers(inGamePlayers: {Player})
+    table.sort(inGamePlayers, function(plr1, plr2)
         local one = Random.new():NextInteger(0, 100)
         local two = Random.new():NextInteger(0, 100)
 
-        return one > two
+        return one < two
     end)
 
-    for index, player in ipairs(players) do
+    for index, player in ipairs(inGamePlayers) do
         local sit = sits[index]
 
         PlayerStats:setPlayerSitPlace(player, index)
@@ -98,7 +98,7 @@ end
     Whenever player leave frees its sit
 ]=]
 Players.PlayerRemoving:Connect(_onPlayerLeave)
-PlayerStats.SitPlaceChanged:Connect(_onSitChange)
-PlayerStats.AdditionalRemotenessChanged:Connect(_onAdditionalRemoteChange)
+PlayerStats.Events.SitPlaceChanged:Connect(_onSitChange)
+PlayerStats.Events.AdditionalRemotenessChanged:Connect(_onAdditionalRemoteChange)
 
 return Chairs
