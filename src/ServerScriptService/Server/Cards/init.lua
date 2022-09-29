@@ -37,8 +37,8 @@ function Bang:use(cardUseInfo: OnPlayerUseInfo)
         attackerAnimTrack:Destroy()
         defenderAnimTrack:Destroy()
 
-        local defenderHealth = Sandbox.PlayerStats:getHealth(cardUseInfo.defender)
-        Sandbox.PlayerStats:setHealth(cardUseInfo.defender, defenderHealth - 1)
+        local defenderHealth = Sandbox.PlayerStats.health:get(cardUseInfo.defender)
+        Sandbox.PlayerStats.health:set(cardUseInfo.defender, defenderHealth - 1)
     end)
     defenderAnimTrack:Play()
     attackerAnimTrack:Play()
@@ -96,20 +96,18 @@ function Cage:use(cardUseInfo: OnPlayerUseInfo)
     
     animationTrack.Stopped:Connect(function()
         animationTrack:Destroy()
-        Sandbox.PlayerStats.ChangeableCardBehavior.IsPlayerTurnDisabled = true
+        Sandbox.PlayerStats.isTurnDisabled:set(cardUseInfo.defender, true)
         Sandbox.PlayerUI:disableCardUse()
     end)
     
     animationTrack:Play()
-    coroutine.wrap(function()
-        repeat
-            task.wait()
-        until Sandbox.PlayerStats.ChangeableCardBehavior.IsPlayerTurnDisabled ~= false
+
+    Sandbox.PlayerStats.isTurnDisabled.Changed:ConnectOnce(function()
         local animation = Animations.PLAYER_FREES_OUT_OF_JAIL
         local animationTrack =
             Animations:animatePlayer(cardUseInfo.defender, animation)
         animationTrack:Play()
-    end)()
+    end)
 end
 --[[
     Класс карты Blackmail
@@ -221,8 +219,8 @@ function Move:new()
     self.super:new(CARD_NAME)
 end
 function Move:use(cardUseInfo: OnPlayerUseInfo)
-    local attackerSitPlace = Sandbox.PlayerStats:getPlayerSitPlace(cardUseInfo.cardOwner)
-    local defenderSitPlace = Sandbox.PlayerStats:getPlayerSitPlace(cardUseInfo.defender)
+    local attackerSitPlace = Sandbox.PlayerStats.sitPlace:get(cardUseInfo.cardOwner)
+    local defenderSitPlace = Sandbox.PlayerStats.sitPlace:get(cardUseInfo.defender)
 
     Sandbox.PlayerUI:showText(
         cardUseInfo.cardOwner,
@@ -238,8 +236,8 @@ function Move:use(cardUseInfo: OnPlayerUseInfo)
             cardUseInfo.cardOwner.Name
         )
     )
-    Sandbox.PlayerStats:setPlayerSitPlace(cardUseInfo.cardOwner, defenderSitPlace)
-    Sandbox.PlayerStats:setPlayerSitPlace(cardUseInfo.defender, attackerSitPlace)
+    Sandbox.PlayerStats.sitPlace:set(cardUseInfo.cardOwner, defenderSitPlace)
+    Sandbox.PlayerStats.sitPlace:set(cardUseInfo.defender, attackerSitPlace)
 
     Sandbox.PlayerUI:clearText(cardUseInfo.cardOwner)
     Sandbox.PlayerUI:clearText(cardUseInfo.defender)
@@ -285,8 +283,8 @@ function Lemonade:use(cardUseInfo: SelfUseInfo)
 
     animationTrack.Stopped:Connect(function()
         animationTrack:Destroy()
-        local previousHealth = Sandbox.PlayerStats:getHealth(cardUseInfo.cardOwner)
-        Sandbox.PlayerStats:setHealth(cardUseInfo.cardOwner, previousHealth + 1)
+        local previousHealth = Sandbox.PlayerStats.health:get(cardUseInfo.cardOwner)
+        Sandbox.PlayerStats.health:set(cardUseInfo.cardOwner, previousHealth + 1)
 
         Sandbox.PlayerUI:clearText(cardUseInfo.cardOwner)
     end)
@@ -341,8 +339,8 @@ function Exchange:use(cardUseInfo: SelfUseInfo)
 
     for index, card in ipairs(cards) do
         if BaseClasses.WeaponCard:is(card) then
-            local previousHealth = Sandbox.PlayerStats:getHealth(cardUseInfo.cardOwner)
-            Sandbox.PlayerStats:setHealth(cardUseInfo.cardOwner, previousHealth + 1)
+            local previousHealth = Sandbox.PlayerStats.health:get(cardUseInfo.cardOwner)
+            Sandbox.PlayerStats.health:set(cardUseInfo.cardOwner, previousHealth + 1)
 
             cardUseInfo.cardOwnerDeck:removeCard(card:getId())
         end
@@ -402,8 +400,8 @@ function AppleJuice:use(cardUseInfo: SelfUseInfo)
     local juiceModel = Instance.new("Model")
     --Ставим модельку куда-то
     --Хиллим игрока
-    local previousHealth = Sandbox.PlayerStats:getHealth(cardUseInfo.cardOwner)
-    Sandbox.PlayerStats:setHealth(cardUseInfo.cardOwner, previousHealth + 1)
+    local previousHealth = Sandbox.PlayerStats.health:get(cardUseInfo.cardOwner)
+    Sandbox.PlayerStats.health:set(cardUseInfo.cardOwner, previousHealth + 1)
 end
 --[[
     Класс карты Scope
@@ -419,8 +417,8 @@ function Scope:use(cardUseInfo: SelfUseInfo)
     --Обновляем UI
     Sandbox.PlayerUI:putOnScope(cardUseInfo.cardOwner)
 
-    local previousRange = Sandbox.PlayerStats:getRange(cardUseInfo.cardOwner)
-    Sandbox.PlayerStats:setRange(cardUseInfo.cardOwner, previousRange)
+    local previousRange = Sandbox.PlayerStats.range:get(cardUseInfo.cardOwner)
+    Sandbox.PlayerStats.range:set(cardUseInfo.cardOwner, previousRange)
 end
 --[[
     Класс карты Brand stool
@@ -433,7 +431,7 @@ end
 function BrandStool:use(cardUseInfo: SelfUseInfo)
     local stoolModel = Instance.new("Model")
     --Цепляем стул
-    Sandbox.PlayerStats:setAdditionalRemoteness(cardUseInfo.cardOwner, 2)
+    Sandbox.PlayerStats.additionalRemoteness:set(cardUseInfo.cardOwner, 2)
 end
 --[=[
     Couple players use card
@@ -465,13 +463,13 @@ function Reverse:use(cardUseInfo: CouplePlayersUseInfo)
     end)
 
     for index, player in ipairs(cardUseInfo.players) do
-        local additionalRemoteness = Sandbox.PlayerStats:getAdditionalRemoteness(player)
+        local additionalRemoteness = Sandbox.PlayerStats.AdditionalRemoteness:get(player)
         if additionalRemoteness > 0 then
-            Sandbox.PlayerStats:setAdditionalRemoteness(player, 0)
+            Sandbox.PlayerStats.additionalRemoteness:set(player, 0)
         end
 
-        Sandbox.PlayerStats:setPlayerSitPlace(player, index)
-        Sandbox.PlayerStats:setAdditionalRemoteness(player, additionalRemoteness)
+        Sandbox.PlayerStats.sitPlace:set(player, index)
+        Sandbox.PlayerStats.additionalRemoteness:set(player, additionalRemoteness)
     end
 end
 --[[
