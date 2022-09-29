@@ -4,32 +4,38 @@ local Remotes = {}
 local Folder = game.ReplicatedStorage.Remotes
 
 Remotes.UI = {}
+Remotes.Cards = {}
+Remotes.Turn = {}
 --[=[
     Server sends to client (name: string, id: string)
 ]=]
-Remotes.CardAdded = Folder:WaitForChild("CardAdded") :: RemoteEvent
+Remotes.Cards.CardAdded = Folder:WaitForChild("CardAdded") :: RemoteEvent
 --[=[
     Server sends to client (name: string, id: string)
 ]=]
-Remotes.CardRemoved = Folder:WaitForChild("CardRemoved") :: RemoteEvent
+Remotes.Cards.CardRemoved = Folder:WaitForChild("CardRemoved") :: RemoteEvent
 --[=[
     Client sends to server (cardId: string, useInfo)
 ]=]
-Remotes.CardActivateOnClient = Folder:WaitForChild("CardActivateOnClient") :: RemoteEvent
+Remotes.Cards.CardActivateOnClient = Folder:WaitForChild("CardActivateOnClient") :: RemoteEvent
 --[=[
     Server sends to client (message: string)
 ]=]
-Remotes.CardActivationFailed = Folder:WaitForChild("CardActivationFailed") :: RemoteEvent
+Remotes.Cards.CardActivationFailed = Folder:WaitForChild("CardActivationFailed") :: RemoteEvent
+--[=[
+    Server sends to client (neededCard: string, causer: Player)
+]=]
+Remotes.Cards.CardAlternates = Folder:WaitForChild("CardAlternates") :: RemoteEvent
 --[=[
     Server sends to client ()
 ]=]
-Remotes.CardActivatedSuccess = Folder:WaitForChild("CardActivatedSuccess") :: RemoteEvent
+Remotes.Cards.CardActivatedSuccess = Folder:WaitForChild("CardActivatedSuccess") :: RemoteEvent
 
-Remotes.TurnStarted = Folder:WaitForChild("TurnStarted") :: RemoteEvent
-Remotes.TurnSkipped = Folder:WaitForChild("TurnSkipped") :: RemoteEvent
-Remotes.TurnEnded = Folder:WaitForChild("TurnEnded") :: RemoteEvent
-Remotes.TurnTimeout = Folder:WaitForChild("TurnTimeout") :: RemoteEvent
-Remotes.TurnDisabled = Folder:WaitForChild("TurnDisabled") :: RemoteEvent
+Remotes.Turn.TurnStarted = Folder:WaitForChild("TurnStarted") :: RemoteEvent
+Remotes.Turn.TurnSkipped = Folder:WaitForChild("TurnSkipped") :: RemoteEvent
+Remotes.Turn.TurnEnded = Folder:WaitForChild("TurnEnded") :: RemoteEvent
+Remotes.Turn.TurnTimeout = Folder:WaitForChild("TurnTimeout") :: RemoteEvent
+Remotes.Turn.TurnDisabled = Folder:WaitForChild("TurnDisabled") :: RemoteEvent
 --[=[
     Servers sends client/clients (message: string)
 ]=]

@@ -53,7 +53,7 @@ local function _onSitChange(player: Player, currentValue)
             chair:SetAttribute("Owner", player.Name)
             local seat = chair.Seat :: Seat
             seat:Sit(player.Character:WaitForChild("Humanoid"))
-            _onAdditionalRemoteChange(player, PlayerStats:getAdditionalRemoteness(player))
+            _onAdditionalRemoteChange(player, PlayerStats.additionalRemoteness:get(player))
         end
     end
 end
@@ -71,7 +71,7 @@ function Chairs:assignPlayers(inGamePlayers: {Player})
     for index, player in ipairs(inGamePlayers) do
         local sit = sits[index]
 
-        PlayerStats:setPlayerSitPlace(player, index)
+        PlayerStats.sitPlace:set(player, index)
         sit:SetAttribute("Owner", player.Name)
     end
 end
@@ -98,7 +98,7 @@ end
     Whenever player leave frees its sit
 ]=]
 Players.PlayerRemoving:Connect(_onPlayerLeave)
-PlayerStats.Events.SitPlaceChanged:Connect(_onSitChange)
-PlayerStats.Events.AdditionalRemotenessChanged:Connect(_onAdditionalRemoteChange)
+PlayerStats.sitPlace.Changed:Connect(_onSitChange)
+PlayerStats.additionalRemoteness.Changed:Connect(_onAdditionalRemoteChange)
 
 return Chairs

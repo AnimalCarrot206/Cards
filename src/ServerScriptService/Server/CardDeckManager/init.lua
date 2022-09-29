@@ -12,9 +12,9 @@ local Decks = {}
 
 function CardDeckManager:prepareDecks(inGamePlayers: {Player})
     for index, player in ipairs(inGamePlayers) do
-        local createdDeck = CardDeck(player, PlayerStats:getStartDeckCapacity(player))
+        local createdDeck = CardDeck(player, PlayerStats.startDeckCapacity:get(player))
         table.insert(Decks, createdDeck)
-        self:dealCardsToAllPlayers()
+        self:dealCardsToPlayers()
     end
 end
 
@@ -34,7 +34,7 @@ function CardDeckManager:getPlayerDeck(player: Player)
     end
 end
 
-function CardDeckManager:dealCardsToAllPlayers()
+function CardDeckManager:dealCardsToPlayers()
     for index, deck in ipairs(Decks) do
         local deckFreeSpace = deck:getFreeSpace() :: number
         for i = 1, deckFreeSpace, 1 do

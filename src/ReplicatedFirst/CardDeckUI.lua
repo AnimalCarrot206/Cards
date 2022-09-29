@@ -127,14 +127,14 @@ do
 			end
 
 			local function _isCanShoot(playerA, playerB)
-				local playerASitPlace = PlayerStats:getPlayerSitPlace(playerA)
-				local playerBSitPlace = PlayerStats:getPlayerSitPlace(playerB)
+				local playerASitPlace = PlayerStats.sitPlace:get(playerA)
+				local playerBSitPlace = PlayerStats.sitPlace:get(playerA)
 
 				local distance = 
 					CalculateRange(playerASitPlace, playerBSitPlace)
-						+ PlayerStats:getAdditionalRemoteness(playerB)
+						+ PlayerStats.additionalRemoteness:get(playerB)
 					
-				return distance > PlayerStats:getRange(game.Players.LocalPlayer) 
+				return distance > PlayerStats.range:get(playerA)
 			end
 
 			local function _highlightPlayersForShoot()

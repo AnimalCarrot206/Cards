@@ -84,7 +84,7 @@ function Sheriff:assign(player: Player)
 	end
 
 	Armory:giveGun(player, "Winchester")
-	PlayerStats:setHealth(player, 8)
+	PlayerStats.health:set(player, 8)
 end
 --
 local Bandit = Role:extend()
@@ -113,7 +113,7 @@ function PlagueDoctor:assign(player: Player)
 	if self:isPlayerRole(player) == false then
 		return
 	end
-	PlayerStats:setHealth(player, 8)
+	PlayerStats.health:set(player, 8)
 end
 --
 local Psycho = Role:extend()

@@ -46,7 +46,7 @@ local Guns: {[string]: Gun} = {
 local createdGuns: {[string]: Gun} = {}
 
 local function _setPlayerAttributes(player: Player, gun: Gun)
-    PlayerStats:setRange(player, gun.range)
+    PlayerStats.range:set(player, gun.range)
 end
 
 local _calculateRange = require(game.ReplicatedStorage.Shared.CalculateRange)
@@ -72,10 +72,10 @@ end
     Calculates range between two players, by their sit places
 ]=]
 function Armory:calculateRange(playerA: Player, playerB: Player)
-    local playerASitPlace = PlayerStats:getPlayerSitPlace(playerA)
-    local playerBSitPlace = PlayerStats:getPlayerSitPlace(playerB)
+    local playerASitPlace = PlayerStats.sitPlace:get(playerA)
+    local playerBSitPlace = PlayerStats.sitPlace:get(playerB)
     
-    return _calculateRange(playerASitPlace, playerBSitPlace) + PlayerStats:getAdditionalRemoteness(playerB)
+    return _calculateRange(playerASitPlace, playerBSitPlace) + PlayerStats.additionalRemoteness:get(playerB)
 end
 --[=[
     Gives player gun, if it found, then destroys previous gun, and changes characteristics

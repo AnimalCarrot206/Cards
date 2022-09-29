@@ -58,19 +58,19 @@ end
     Fires server with given cardId and useInfo
 ]=]
 function CardManager:useCard(cardId: string, useInfo)
-    Remotes.CardActivateOnClient:FireServer(cardId, useInfo)
+    Remotes.Cards.CardActivateOnClient:FireServer(cardId, useInfo)
 end
 --[=[
     When card was added to player deck caches it and fire event
 ]=]
-Remotes.CardAdded.OnClientEvent:Connect(function(cardName, cardId)
+Remotes.Cards.CardAdded.OnClientEvent:Connect(function(cardName, cardId)
     CardManager.CardAdded:Fire(cardName, cardId)
     cachedCards[cardId] = cardName
 end)
 --[=[
     When card was removed from player deck uncaches it and fire event
 ]=]
-Remotes.CardRemoved.OnClientEvent:Connect(function(cardName, cardId)
+Remotes.Cards.CardRemoved.OnClientEvent:Connect(function(cardName, cardId)
     CardManager.CardRemoved:Fire(cardName, cardId)
     cachedCards[cardId] = nil
 end)

@@ -3,18 +3,14 @@ local Players = game:GetService("Players")
 
 local Class = require(game.ReplicatedStorage.Shared.Class)
 local Remotes = require(game.ReplicatedStorage.Shared.Remotes)
-local Promise = require(game.ReplicatedStorage.Shared.Promise)
 local CustomEnum = require(game.ReplicatedStorage.Shared.CustomEnum)
+local PlayerStats = require(game.ReplicatedStorage.Shared.PlayerStats)
 local PlayerUI = require(game.ServerScriptService.Server.PlayerCardUI_Server)
-
-local CardInterpreter = require(game.ServerScriptService.Server.CardInterpreter)
+local CardDeckManager = require(game.ServerScriptService.Server.CardDeckManager)
 
 local TurnManager = Class:extend()
 
-local CARD_INPUT_TIMEOUT = 20
-
 local inGamePlayers: Array<Player>
-local diasabledTurns: Array<number> = {}
 local currentPlayerIndex = 0
 local turnOwner
 --[=[
@@ -25,6 +21,7 @@ function TurnManager:initialize(players: Array<Player>)
 end
 do
     local status = CustomEnum.TurnStatus.End
+    local playerWhichTurnDisabled = nil
 --[=[
     Creates new turn, must be called before TurnManager:beginTurn() and after TurnManager:endTurn().
 
@@ -33,14 +30,17 @@ do
 ]=]
     function TurnManager:nextTurn()
         currentPlayerIndex += 1
-        local disabledTurnsIndex
-
-        repeat
-            disabledTurnsIndex = table.find(diasabledTurns, currentPlayerIndex)
-            currentPlayerIndex = if #inGamePlayers then 1 else currentPlayerIndex + 1
-        until disabledTurnsIndex == nil
 
         turnOwner = inGamePlayers[currentPlayerIndex]
+        local isTurnDisabled = PlayerStats.isTurnDisabled:get(turnOwner)
+
+        if isTurnDisabled == true then
+            self:disablePlayerNearestTurn(turnOwner)
+            if playerWhichTurnDisabled ~= nil then
+                -- Меняем свойство
+            end
+            self:nextTurn()
+        end
 
         if currentPlayerIndex == #inGamePlayers then
             currentPlayerIndex = 0
@@ -54,27 +54,9 @@ do
     function TurnManager:beginTurn()
         Remotes.TurnStarted:FireClient(turnOwner)
         status = CustomEnum.TurnStatus.Begin
+        PlayerUI:showText(turnOwner, "Your turn!")
     end
 
-    function TurnManager:handleCardInput(inputPlayer: Player)
-        local p = Promise.fromEvent(Remotes.CardActivateOnClient.OnServerEvent,
-            function(player: Player, cardId: string, ...)
-            if not cardId then
-                return false
-            end
-            local useInfo = CardInterpreter:getUseInfo(player, cardId, ...)
-            local errorCode, card = CardInterpreter:interpret(cardId, useInfo)
-            if errorCode ~= "Success" then
-                Remotes.CardActivationFailed:FireClient(player, errorCode)
-                return false
-            end
-            return true
-        end)
-        :timeout(CARD_INPUT_TIMEOUT)
-        :andThen(function(player: Player, cardId: string, ...)
-            
-        end)
-    end
 --[=[
     Ends created turn, and notifies client.
     Must be called after TurnManager:beginTurn() and before TurnManager:nextTurn()
@@ -82,6 +64,9 @@ do
     function TurnManager:endTurn()
         Remotes.TurnEnded:FireClient(turnOwner)
         status = CustomEnum.TurnStatus.End
+        PlayerUI:clearText(turnOwner)
+
+        CardDeckManager:dealCardsToPlayers()
     end
 --[=[
     Returns turn status (CustomEnum.TurnStatus)
@@ -98,7 +83,6 @@ function TurnManager:disablePlayerNearestTurn(player: Player)
     if not playerIndex then
         return
     end
-    table.insert(diasabledTurns, playerIndex)
     Remotes.TurnDisabled:FireClient(player)
 end
 --[=[
@@ -114,7 +98,6 @@ Players.PlayerRemoving:Connect(function(player)
     end
 
     table.remove(inGamePlayers, foundPlayer)
-    diasabledTurns[foundPlayer] = nil
     if currentPlayerIndex >= #inGamePlayers then
         currentPlayerIndex = 0
     end

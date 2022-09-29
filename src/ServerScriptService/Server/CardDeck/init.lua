@@ -49,7 +49,7 @@ function CardDeck:addCard(cardName: string, isConsideringCapacity: true?)
     end
     local createdCard = Cards[cardName]()
     table.insert(self._cards, createdCard)
-    Remotes.CardAdded:FireClient(self._owner, cardName, createdCard:getId())
+    Remotes.Cards.CardAdded:FireClient(self._owner, cardName, createdCard:getId())
 end
 
 function CardDeck:removeCard(cardId: string)
@@ -58,7 +58,7 @@ function CardDeck:removeCard(cardId: string)
             card:destroy()
             table.remove(self._cards, index)
             card = nil
-            Remotes.CardRemoved:FireClient(self._owner, card:getName(), cardId)
+            Remotes.Cards.CardRemoved:FireClient(self._owner, card:getName(), cardId)
             return
         end
     end
