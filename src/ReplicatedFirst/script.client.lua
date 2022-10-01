@@ -1,26 +1,29 @@
+--!strict
 if not game:IsLoaded() then
-    game.Loaded:Wait()
+	game.Loaded:Wait()
 end
-game:WaitForChild("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("Remotes")
-local Remotes = require(game.ReplicatedStorage.Shared.Remotes)
 
-local screenGui = Instance.new("ScreenGui")
+local TweenService = game:GetService("TweenService")
 
-local PlayerGui = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-screenGui.Parent = PlayerGui
+local CardManager = require(game.ReplicatedStorage.Client.ClientCardManager)
+local CardUIElemnts = require()
 
-Remotes.UI.ShowText.OnClientEvent:Connect(function(text: string)
-    local textLabel = Instance.new("TextLabel")
-    textLabel.TextScaled = true
-    textLabel.Text = text or ""
+local Player = game.Players.LocalPlayer
+local Character = Player.Character or Player.CharacterAdded:Wait()
 
-    textLabel.Parent = screenGui
-end)
+local Container = script.Parent
 
-Remotes.UI.ClearText.OnClientEvent:Connect(function()
-    local textLabel = screenGui:FindFirstAncestorOfClass("TextLabel")
-    if not textLabel then
-        return
-    end
-    textLabel:Destroy()
-end)
+do
+    local Cards = {}
+
+	local function onCardAdded(cardName: string, cardId: string)
+
+	end
+
+	local function onCardRemoved(cardName: string, cardId: string)
+
+	end
+	
+    CardManager.CardAdded:Connect(onCardAdded)
+    CardManager.CardRemoved:Connect(onCardRemoved)
+end
