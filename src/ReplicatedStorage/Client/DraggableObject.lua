@@ -41,9 +41,9 @@ function DraggableObject:Enable()
 	
 	-- Updates the element
 	local function update(input)
-		local delta 		= input.Position - dragStart
-		local newPosition	= UDim2_new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-		object.Position 	= newPosition
+		local delta = input.Position - dragStart
+		local newPosition = UDim2_new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+		object.Position = newPosition
 	
 		return newPosition
 	end
@@ -69,7 +69,6 @@ function DraggableObject:Enable()
 					if not preparingToDrag then
 						self.DragEnded:Fire()
 					end
-					
 					preparingToDrag = false
 				end
 			end)
@@ -87,22 +86,18 @@ function DraggableObject:Enable()
 			self:Disable()
 			return
 		end
-		
+
 		if preparingToDrag then
 			preparingToDrag = false
-			
-			
 			self.DragStarted:Fire()
-
+			self.Dragging = true
 			
-			self.Dragging	= true
-			dragStart 		= input.Position
-			startPos 		= object.Position
+			dragStart = input.Position
+			startPos = object.Position
 		end
 		
 		if input == dragInput and self.Dragging then
 			local newPosition = update(input)
-			
 			self.Dragged:Fire(newPosition)
 		end
 	end)
@@ -118,7 +113,6 @@ function DraggableObject:Disable()
 	
 	if self.Dragging then
 		self.Dragging = false
-		
 		self.DragEnded:Fire()
 	end
 	self.Enabled = false
