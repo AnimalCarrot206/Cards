@@ -5,7 +5,6 @@ local Class = require(game.ReplicatedStorage.Shared.Class)
 local CustomEnum = require(game.ReplicatedStorage.Shared.CustomEnum)
 local PlayerStats = require(game.ReplicatedStorage.Shared.PlayerStats)
 
-local TurnManager = require(game.ServerScriptService.Server.TurnManager)
 local Armory = require(game.ServerScriptService.Server.Armory)
 local PlayerCardUI_Server = require(game.ServerScriptService.Server.PlayerCardUI_Server)
 local _getRandomCard = require(game.ServerScriptService.Server.RandomCardChooser)
@@ -54,19 +53,20 @@ end
     2 игрока: владелец, и игрок, которого выбрал владелец карты
 ]=]
 local OnPlayerUseCard = Card:extend()
-OnPlayerUseCard.Alternate = nil
 function OnPlayerUseCard:new(cardName: string)
     local idStringStart = CustomEnum.CardIdLiteral.OnPlayerUseCard.Value
     self.super:new(cardName, idStringStart)
 end
-
-function OnPlayerUseCard:getAlternate()
-    return self.Alternate :: string
-end
-
 function OnPlayerUseCard:use(info: UseInfo.OnPlayerUseInfo)
     error("Not implemented method!")
 end
+--[=[___________]=]--
+local AlternateOnPlayerUseCard = OnPlayerUseCard:extend()
+AlternateOnPlayerUseCard.Alternate = nil
+function AlternateOnPlayerUseCard:getAlternate()
+    return self.Alternate :: string
+end
+--[=[___________]=]--
 --[=[
     Класс карты при использовании которой будет задействован только её владелец
 ]=]
@@ -116,5 +116,6 @@ return {
     SelfUseCard = SelfUseCard,
     WeaponCard = WeaponCard,
     BonusCard = BonusCard,
-    CouplePlayersUseCard = CouplePlayersUseCard
+    CouplePlayersUseCard = CouplePlayersUseCard,
+    AlternateOnPlayerUseCard = AlternateOnPlayerUseCard
 }

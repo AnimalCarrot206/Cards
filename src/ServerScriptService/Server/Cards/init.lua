@@ -17,7 +17,7 @@ export type CouplePlayersUseInfo = UseInfo.CouplePlayersUseInfo
 --[[
     Класс карты Bang!!
 ]]
-local Bang = BaseClasses.OnPlayerUseCard:extend()
+local Bang = BaseClasses.AlternateOnPlayerUseCard:extend()
 function Bang:new()
     local CARD_NAME = CustomEnum.GameCard["Bang!!"].Name
     local alternate = CustomEnum.GameCard["Miss"].Name
@@ -46,11 +46,10 @@ end
 --[[
     Класс карты Miss
 ]]
-local Miss = BaseClasses.OnPlayerUseCard:extend()
+local Miss = BaseClasses.SelfUseCard:extend()
 function Miss:new()
     local CARD_NAME = CustomEnum.GameCard["Miss"].Name
-    local alternate = nil
-    self.super:new(CARD_NAME, alternate)
+    self.super:new(CARD_NAME)
 end
 function Miss:use(cardUseInfo: OnPlayerUseInfo)
     local attacker = cardUseInfo.defender
@@ -71,7 +70,7 @@ end
 --[[
     Класс карты Cage
 ]]
-local Cage = BaseClasses.OnPlayerUseCard:extend()
+local Cage = BaseClasses.AlternateOnPlayerUseCard:extend()
 Cage.Alternate = CustomEnum.GameCard["Mayor's pardon"].Name
 function Cage:new()
     local CARD_NAME = CustomEnum.GameCard["Cage"].Name
@@ -113,7 +112,6 @@ end
     Класс карты Blackmail
 ]]
 local Blackmail = BaseClasses.OnPlayerUseCard:extend()
-Blackmail.Alternate = nil
 function Blackmail:new()
     local CARD_NAME = CustomEnum.GameCard["Blackmail"].Name
     self.super:new(CARD_NAME)
@@ -162,7 +160,6 @@ end
     Класс карты Thief
 ]]
 local Thief = BaseClasses.OnPlayerUseCard:extend()
-Thief.Alternate = nil
 function Thief:new()
     local CARD_NAME = CustomEnum.GameCard["Thief"].Name
     self.super:new(CARD_NAME)
@@ -201,7 +198,6 @@ end
     Класс карты Duel
 ]]
 local Duel = BaseClasses.OnPlayerUseCard:extend()
-Duel.Alternate = nil
 function Duel:new()
     local CARD_NAME = CustomEnum.GameCard["Duel"].Name
     self.super:new(CARD_NAME)
@@ -213,7 +209,6 @@ end
     Класс карты Move
 ]]
 local Move = BaseClasses.OnPlayerUseCard:extend()
-Move.Alternate = nil
 function Move:new()
     local CARD_NAME = CustomEnum.GameCard["Move"].Name
     self.super:new(CARD_NAME)

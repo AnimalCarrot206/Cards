@@ -6,10 +6,6 @@ local Remotes = require(game.ReplicatedStorage.Shared.Remotes)
 local CustomEnum = require(game.ReplicatedStorage.Shared.CustomEnum)
 
 local Cards = require(game.ServerScriptService.Server.Cards):: {[string]: any}
-local CardInput = require(game.ServerScriptService.Server.CardInput)
-
-local DEFFAULT_DECK_CAPACITY = 6
-local PLAYER_CARD_INPUT_TIMEOUT_IN_SECONDS = 20
 
 local CardDeck = Class:extend()
 
@@ -21,10 +17,10 @@ local function _findCard(container, cardId: string)
     end
 end
 
-function CardDeck:new(owner: Player, capacity: number?)
+function CardDeck:new(owner: Player, capacity: number)
     self._owner = owner
     self._cards = {}
-    self._capacity = capacity or DEFFAULT_DECK_CAPACITY
+    self._capacity = capacity
 end
 
 function CardDeck:destroy()

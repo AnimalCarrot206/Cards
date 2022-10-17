@@ -34,7 +34,7 @@ function CardDeckManager:getPlayerDeck(player: Player)
     end
 end
 
-function CardDeckManager:dealCardsToPlayers()
+function CardDeckManager:dealCards()
     for index, deck in ipairs(Decks) do
         local deckFreeSpace = deck:getFreeSpace() :: number
         for i = 1, deckFreeSpace, 1 do
@@ -44,14 +44,6 @@ function CardDeckManager:dealCardsToPlayers()
             deck:addCard(cardName)
             --TESTING
         end
-    end
-end
-
-function CardDeckManager:dealCardsToPlayer(player: Player, cardsNumber: number)
-    local playerDeck = self:getPlayerDeck(player)
-    for i = cardsNumber, 1, -1 do
-        local cardName = _getRandomCard()
-        playerDeck:addCard(cardName, false)
     end
 end
 

@@ -32,7 +32,7 @@ function PlayerCardUI_Server:putOnScope(player: Player)
 end
 
 function PlayerCardUI_Server:disableCardUse(player: Player)
-    Remotes.UI.CardUIDIsabled:Fire(player)
+    Remotes.UI.CardUIDisabled:Fire(player)
 end
 
 return PlayerCardUI_Server

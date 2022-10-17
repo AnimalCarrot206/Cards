@@ -66,7 +66,7 @@ do
         status = CustomEnum.TurnStatus.End
         PlayerUI:clearText(turnOwner)
 
-        CardDeckManager:dealCardsToPlayers()
+        CardDeckManager:dealCards()
     end
 --[=[
     Returns turn status (CustomEnum.TurnStatus)

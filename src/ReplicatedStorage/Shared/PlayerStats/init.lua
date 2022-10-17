@@ -21,16 +21,32 @@ local changeableBehaviorCharacteristicsNames = {
     {attributeName = "isTurnDisabled", defaultValue = false},
 }
 
-function _initStats(statTable: {attribute: string, defaultValue: any})
+function _initCommonStats()
     for _, value in ipairs(characteristicsNames) do
         local stat = PlayerStatistic.PlayerStatistic(
             value.attributeName, value.defaultValue
         )
-        table.insert(PlayerStats, stat)
+        PlayerStats[value.attributeName] = stat
     end
 end
-_initStats(characteristicsNames)
-_initStats(baseCharacteristicsNames)
-_initStats(changeableBehaviorCharacteristicsNames)
+function _initBaseStats()
+    for _, value in ipairs(baseCharacteristicsNames) do
+        local stat = PlayerStatistic.BaseCharacteristics(
+            value.attributeName, value.defaultValue
+        )
+        PlayerStats[value.attributeName] = stat
+    end
+end
+function _initChangableBehaviorStats()
+    for _, value in ipairs(changeableBehaviorCharacteristicsNames) do
+        local stat = PlayerStatistic.ChangeableBehaviorCharacteristics(
+            value.attributeName, value.defaultValue
+        )
+        PlayerStats[value.attributeName] = stat
+    end
+end
+_initCommonStats()
+_initBaseStats()
+_initChangableBehaviorStats()
 
 return PlayerStats

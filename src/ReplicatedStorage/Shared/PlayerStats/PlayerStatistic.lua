@@ -17,7 +17,7 @@ end
 function PlayerStatistic:set(player: Player, valueToSet: any)
     local previousValue = self:get(player)
     player:SetAttribute(self.attributeName, valueToSet)
-    self.Changed:Fire(previousValue, valueToSet)
+    self.Changed:Fire(player, previousValue, valueToSet)
 end
 --Базовые хар-ки это: оз, дальность, вместимость колоды, доп. удаленность,
 --также дефолт-варианты этих хар-к(если есть)

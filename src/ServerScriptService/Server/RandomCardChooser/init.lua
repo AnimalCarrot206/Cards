@@ -20,8 +20,8 @@ local _getRandomCard do
             [1] = {name = "Other", percent = 100}
         },
         ["GameCard"] = {
-            [1] = {name = "Reverse", percent = 99},
-            [2] = {name = "Mixed", percent = 1, mixins = {
+            [1] = {name = "Reverse", percent = 1},
+            [2] = {name = "Mixed", percent = 99, mixins = {
                 "Bang!!", "Miss", "Other"
             }}
         }
@@ -78,6 +78,7 @@ local _getRandomCard do
 				end
                 return card
             end
+            randomNumber -= chanceInfo.percent
         end
     end
 end

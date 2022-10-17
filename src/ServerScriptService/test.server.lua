@@ -8,14 +8,14 @@ game.Players.PlayerAdded:Connect(function(player)
     player.CharacterAdded:Wait()
     local players = game.Players:GetPlayers()
     local playerCount = #players
-    if playerCount >= 2  then
+    if playerCount >= 1  then
         task.wait(10)
         warn("Dealing cards...")
         Chairs:assignPlayers(players)
         Armory:prepareGuns(players)
         CardDeckManager:prepareDecks(players)
 
-        Remotes.CardActivateOnClient.OnServerEvent:Connect(function(player, cardId, ...)
+        Remotes.Cards.CardActivateOnClient.OnServerEvent:Connect(function(player, cardId, ...)
             local args = {...}
             local cardDeck = CardDeckManager:getPlayerDeck(player)
             local card = cardDeck:getCard(cardId)
