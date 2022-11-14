@@ -8,7 +8,7 @@ local DEFAULT_TWEEN_INFO = {
 }
 --Creates common tween
 function Animate:createTween(object, props: {[string] : any}, tweenInfo: TweenInfo?)
-    assert(object ~= nil and typeof(object) == "Instance", "")
+    assert(object ~= nil and typeof(object) == "Instance", "Object to animate must be instance got: " .. tostring(object))
 
     local tween = 
         TweenService:Create(object, tweenInfo or DEFAULT_TWEEN_INFO.Default, props)
@@ -36,7 +36,6 @@ function Animate:animateWithYielding(object, props: {[string] : any}, tweenInfo:
 
     tween:Play()
     tween.Completed:Wait()
-    tween:Destroy()
 end
 
 return Animate

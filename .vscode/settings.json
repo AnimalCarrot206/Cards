@@ -1,3 +1,10 @@
 {
-    "robloxLsp.diagnostics.workspaceDelay": -1
+    "robloxLsp.diagnostics.workspaceDelay": -1,
+    "robloxLsp.completion.enable": true,
+    "robloxLsp.completion.keywordSnippet": "Both",
+    "robloxLsp.completion.endAutocompletion":  true,
+    "robloxLsp.hint.paramName": true,
+    "robloxLsp.hint.setType": true,
+    "robloxLsp.hint.enable": true,
+    "robloxLsp.hint.returnType": true,
 }

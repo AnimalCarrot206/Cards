@@ -12,6 +12,12 @@ CardManager.CardAdded = GoodSignal.new()
 -- (cardName, cardId)
 CardManager.CardRemoved = GoodSignal.new()
 
+local function _getImage(cardName) :: string
+end
+
+local function _getDescription(cardName) :: string
+end
+
 local images = {}
 local descriptions = {}
 
@@ -32,13 +38,13 @@ end
     Returns card imageId by provided cardName
 ]=]
 function CardManager:getCardImage(cardName: string): string
-    return images[cardName]
+    return _getImage(cardName)
 end
 --[=[
     Returns card description by provided cardName
 ]=]
 function CardManager:getCardDescription(cardName: string): string
-    return descriptions[cardName]
+    return _getDescription(cardName)
 end
 --[=[
     Returns type of how card should be use
